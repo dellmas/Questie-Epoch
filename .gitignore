@@ -1,0 +1,52 @@
+# IDE and Editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Documentation files we don't want
+*.md
+!README.md
+CHANGELOG.md
+CLAUDE.md
+CURRENT_WORK_STATUS.md
+EPOCH_QUEST_TRACKER.md
+BUG_TRACKER.md
+TRACKING.md
+GITHUB_ISSUE.md
+PR_*.md
+
+# Images
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.bmp
+
+# Scripts and batch files
+*.bat
+*.sh
+
+# Temporary and backup files
+*.tmp
+*.bak
+*.backup
+*.old
+
+# Pull requests folder
+pull_requests/
+
+# WoW SavedVariables (these should stay local)
+WTF/
+SavedVariables/
+
+# Log files
+*.log
+
+# Build artifacts
+*.zip
+*.tar
+*.tar.gz
