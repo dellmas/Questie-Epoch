@@ -489,8 +489,8 @@ function QuestieInit:Init()
     -- EpogQuestie: Clean startup message
     local currentVersion = GetAddOnMetadata("Questie", "Version") or
                           GetAddOnMetadata("EpogQuestie", "Version") or "Unknown"
-    print("|cFF00FF00[EpogQuestie]|r Version " .. currentVersion ..
-          " | Check for updates at Github: https://github.com/esurm/Questie")
+    print("|cFF00FF00[Questie-Epoch]|r Version " .. currentVersion ..
+          " | Check for updates at Github: https://github.com/trav346/Questie-Epoch")
     
     ThreadLib.ThreadError(_QuestieInit.StartStageCoroutine,
                           Questie.db.profile.initDelay or 0,

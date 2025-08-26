@@ -171,7 +171,7 @@ function QuestieSlash.HandleCommands(input)
         end
 
         Questie:Print("Questie " .. QuestieLib:GetAddonVersionString() .. ", Client " .. GetBuildInfo() .. " " .. gameType .. ", Locale " .. GetLocale())
-        print("|cFFFFFF00[EpogQuestie]|r Check for updates at Github: https://github.com/esurm/Questie")
+        print("|cFFFFFF00[Questie-Epoch]|r Check for updates at Github: https://github.com/trav346/Questie-Epoch")
         return
     end
 
