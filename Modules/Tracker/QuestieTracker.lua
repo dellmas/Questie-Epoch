@@ -87,31 +87,38 @@ function QuestieTracker.Initialize()
         return
     end
     
+    -- Ensure database is available
+    if not Questie.db or not Questie.db.char or not Questie.db.profile then
+        Questie:Error("[QuestieTracker] Database not initialized yet, cannot start tracker")
+        return
+    end
+    
     Questie:Debug(Questie.DEBUG_CRITICAL, "[QuestieTracker] Starting initialization")
 
     -- These values might also be accessed by other modules, so we need to make sure they exist. Even when the Tracker is disabled
-    if (not Questie.db.char.TrackerHiddenQuests) then
+    -- Also handle corrupted data by resetting to empty tables if the type is wrong
+    if (not Questie.db.char.TrackerHiddenQuests) or (type(Questie.db.char.TrackerHiddenQuests) ~= "table") then
         Questie.db.char.TrackerHiddenQuests = {}
     end
-    if (not Questie.db.char.TrackerHiddenObjectives) then
+    if (not Questie.db.char.TrackerHiddenObjectives) or (type(Questie.db.char.TrackerHiddenObjectives) ~= "table") then
         Questie.db.char.TrackerHiddenObjectives = {}
     end
-    if (not Questie.db.char.TrackedQuests) then
+    if (not Questie.db.char.TrackedQuests) or (type(Questie.db.char.TrackedQuests) ~= "table") then
         Questie.db.char.TrackedQuests = {}
     end
-    if (not Questie.db.char.AutoUntrackedQuests) then
+    if (not Questie.db.char.AutoUntrackedQuests) or (type(Questie.db.char.AutoUntrackedQuests) ~= "table") then
         Questie.db.char.AutoUntrackedQuests = {}
     end
-    if (not Questie.db.char.collapsedZones) then
+    if (not Questie.db.char.collapsedZones) or (type(Questie.db.char.collapsedZones) ~= "table") then
         Questie.db.char.collapsedZones = {}
     end
-    if (not Questie.db.char.minAllQuestsInZone) then
+    if (not Questie.db.char.minAllQuestsInZone) or (type(Questie.db.char.minAllQuestsInZone) ~= "table") then
         Questie.db.char.minAllQuestsInZone = {}
     end
-    if (not Questie.db.char.collapsedQuests) then
+    if (not Questie.db.char.collapsedQuests) or (type(Questie.db.char.collapsedQuests) ~= "table") then
         Questie.db.char.collapsedQuests = {}
     end
-    if (not Questie.db.char.trackedAchievementIds) then
+    if (not Questie.db.char.trackedAchievementIds) or (type(Questie.db.char.trackedAchievementIds) ~= "table") then
         Questie.db.char.trackedAchievementIds = {}
     end
     if (not Questie.db.profile.TrackerWidth) then
