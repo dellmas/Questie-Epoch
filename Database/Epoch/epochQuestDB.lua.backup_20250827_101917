@@ -612,12 +612,5 @@ local epochQuestData = {
 [63491] = {"[Epoch] Quest 63491",nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,{9691,9695,9698},nil,nil,1,nil,nil,nil,nil,nil,nil},
 }
 
--- Add missing Epoch quest stubs to allow tracker to function
-epochQuestData[26499] = {"[Epoch] Magical Materiel",nil,nil,nil,35,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
-epochQuestData[26506] = {"[Epoch] The Strahnbrad Courier",nil,nil,nil,35,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
-epochQuestData[26538] = {"[Epoch] The Barony Mordis",nil,nil,nil,35,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
-epochQuestData[26543] = {"[Epoch] Watermelon Punch",nil,nil,nil,35,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
-epochQuestData[27503] = {"[Epoch] Quest 27503",nil,nil,nil,1,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
-
 -- Stage the Epoch questData for later merge during compilation
 QuestieDB._epochQuestData = epochQuestData
