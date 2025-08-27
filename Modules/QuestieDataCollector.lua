@@ -164,7 +164,9 @@ function QuestieDataCollector:CheckExistingQuests()
                                         npcs = {},
                                         items = {},
                                         objects = {},
-                                        sessionStart = date("%Y-%m-%d %H:%M:%S")
+                                        sessionStart = date("%Y-%m-%d %H:%M:%S"),
+                                        wasAlreadyAccepted = true,  -- Flag that this quest was in log when addon loaded
+                                        incompleteData = true  -- We don't have quest giver info
                                     }
                                     -- Silently track quest
                                 end
@@ -1440,14 +1442,28 @@ end
 
 function QuestieDataCollector:ShowTrackedQuests()
     DEFAULT_CHAT_FRAME:AddMessage("=== Tracked Quest Data ===", 0, 1, 1)
+    local incompleteCount = 0
+    local completeCount = 0
+    
     for questId, data in pairs(QuestieDataCollection.quests) do
         local status = _activeTracking[questId] and "|cFF00FF00[ACTIVE]|r" or "|cFFFFFF00[COMPLETE]|r"
+        
+        -- Add warning for incomplete data
+        if data.wasAlreadyAccepted or data.incompleteData then
+            status = status .. " |cFFFF0000[INCOMPLETE DATA]|r"
+            incompleteCount = incompleteCount + 1
+        else
+            completeCount = completeCount + 1
+        end
+        
         DEFAULT_CHAT_FRAME:AddMessage(string.format("%s %d: %s", status, questId, data.name or "Unknown"), 1, 1, 1)
         
         if data.questGiver then
             DEFAULT_CHAT_FRAME:AddMessage(string.format("  Giver: %s (%d) at [%.1f, %.1f]", 
                 data.questGiver.name, data.questGiver.npcId, 
                 data.questGiver.coords.x, data.questGiver.coords.y), 0.7, 0.7, 0.7)
+        elseif data.wasAlreadyAccepted then
+            DEFAULT_CHAT_FRAME:AddMessage("  |cFFFF0000Quest Giver: MISSING (quest was already accepted)|r", 1, 0.5, 0)
         end
         
         if data.turnInNpc then
@@ -1455,6 +1471,13 @@ function QuestieDataCollector:ShowTrackedQuests()
                 data.turnInNpc.name, data.turnInNpc.npcId,
                 data.turnInNpc.coords.x, data.turnInNpc.coords.y), 0.7, 0.7, 0.7)
         end
+    end
+    
+    DEFAULT_CHAT_FRAME:AddMessage(string.format("\nTotal: %d quests (%d complete, %d incomplete)", 
+        completeCount + incompleteCount, completeCount, incompleteCount), 1, 1, 0)
+    
+    if incompleteCount > 0 then
+        DEFAULT_CHAT_FRAME:AddMessage("|cFFFF0000To get complete data: Abandon and re-accept quests marked as INCOMPLETE|r", 1, 0.5, 0)
     end
 end
 
@@ -1832,6 +1855,15 @@ function QuestieDataCollector:GenerateExportText(questId, data, skipInstructions
     end
     
     text = text .. "=== QUEST DATA ===\n\n"
+    
+    -- Add warning if quest has incomplete data
+    if data.wasAlreadyAccepted or data.incompleteData then
+        text = text .. "⚠️ WARNING: INCOMPLETE DATA ⚠️\n"
+        text = text .. "This quest was already in the quest log when the addon was installed.\n"
+        text = text .. "Quest giver NPC information is missing.\n"
+        text = text .. "Please abandon and re-accept this quest for complete data.\n\n"
+    end
+    
     text = text .. "Quest ID: " .. questId .. "\n"
     text = text .. "Quest Name: " .. (data.name or "Unknown") .. "\n"
     text = text .. "Level: " .. (data.level or "Unknown") .. "\n"
