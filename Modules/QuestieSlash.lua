@@ -59,7 +59,7 @@ function QuestieSlash.HandleCommands(input)
         print(Questie:Colorize("/questie tomap [<npcId>/<npcName>/reset] - " .. l10n("Adds manual notes to the map for a given NPC ID or name. If the name is ambiguous multipe notes might be added. Without a second command the target will be added to the map. The 'reset' command removes all notes"), "yellow"));
         print(Questie:Colorize("/questie minimap - " .. l10n("Toggles the Minimap Button for Questie"), "yellow"));
         print(Questie:Colorize("/questie journey - " .. l10n("Toggles the My Journey window"), "yellow"));
-        print(Questie:Colorize("/questie tracker [show/hide/reset] - " .. l10n("Toggles the Tracker. Add 'show', 'hide', 'reset' to explicit show/hide or reset the Tracker"), "yellow"));
+        print(Questie:Colorize("/questie tracker [show/hide/reset/debug] - " .. l10n("Toggles the Tracker. Add 'show', 'hide', 'reset', 'debug' to explicit show/hide, reset, or debug the Tracker"), "yellow"));
         print(Questie:Colorize("/questie flex - " .. l10n("Flex the amount of quests you have completed so far"), "yellow"));
         print(Questie:Colorize("/questie doable [questID] - " .. l10n("Prints whether you are eligibile to do a quest"), "yellow"));
         print(Questie:Colorize("/questie version - " .. l10n("Prints Questie and client version info"), "yellow"));
@@ -108,6 +108,27 @@ function QuestieSlash.HandleCommands(input)
             QuestieTracker:Disable()
         elseif subCommand == "reset" then
             QuestieTracker:ResetLocation()
+        elseif subCommand == "debug" then
+            -- Debug command to diagnose tracker issues
+            Questie:Print("|cFF00FF00=== Questie Tracker Debug Info ===|r")
+            Questie:Print("Tracker started: " .. tostring(QuestieTracker.started or false))
+            Questie:Print("Tracker enabled in profile: " .. tostring(Questie.db and Questie.db.profile and Questie.db.profile.trackerEnabled or false))
+            
+            if Questie.db and Questie.db.char then
+                Questie:Print("TrackerHiddenQuests type: " .. type(Questie.db.char.TrackerHiddenQuests))
+                Questie:Print("TrackedQuests type: " .. type(Questie.db.char.TrackedQuests))
+                Questie:Print("AutoUntrackedQuests type: " .. type(Questie.db.char.AutoUntrackedQuests))
+            else
+                Questie:Print("|cFFFF0000Database char data not available!|r")
+            end
+            
+            -- Try to reinitialize if not started
+            if not QuestieTracker.started then
+                Questie:Print("Attempting to reinitialize tracker...")
+                QuestieTracker.Initialize()
+            else
+                Questie:Print("Tracker is already initialized")
+            end
         else
             QuestieTracker:Toggle()
         end

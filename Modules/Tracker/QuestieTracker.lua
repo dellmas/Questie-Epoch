@@ -84,15 +84,18 @@ function QuestieTracker.Initialize()
     if QuestieTracker.started then
         -- The Tracker was already initialized, so we don't need to do it again.
         Questie:Debug(Questie.DEBUG_CRITICAL, "[QuestieTracker] Already initialized, skipping")
+        Questie:Print("[QuestieTracker] Already initialized")
         return
     end
     
     -- Ensure database is available
     if not Questie.db or not Questie.db.char or not Questie.db.profile then
         Questie:Error("[QuestieTracker] Database not initialized yet, cannot start tracker")
+        Questie:Print("|cFFFF0000[QuestieTracker] ERROR: Database not initialized! Please /reload or restart WoW.|r")
         return
     end
     
+    Questie:Print("[QuestieTracker] Starting initialization...")
     Questie:Debug(Questie.DEBUG_CRITICAL, "[QuestieTracker] Starting initialization")
 
     -- These values might also be accessed by other modules, so we need to make sure they exist. Even when the Tracker is disabled
@@ -134,21 +137,49 @@ function QuestieTracker.Initialize()
     if (not Questie.db.profile.trackerEnabled) then
         -- The Tracker is disabled, no need to continue
         Questie:Debug(Questie.DEBUG_CRITICAL, "[QuestieTracker] Tracker disabled in profile, not initializing")
+        Questie:Print("[QuestieTracker] Tracker is disabled in settings")
         return
     end
     
+    Questie:Print("[QuestieTracker] Tracker enabled, initializing frames...")
     Questie:Debug(Questie.DEBUG_CRITICAL, "[QuestieTracker] Tracker enabled, continuing initialization")
 
-    -- Initialize tracker frames
-    trackerBaseFrame = TrackerBaseFrame.Initialize()
-    trackerHeaderFrame = TrackerHeaderFrame.Initialize(trackerBaseFrame)
-    trackerQuestFrame = TrackerQuestFrame.Initialize(trackerBaseFrame, trackerHeaderFrame)
+    -- Initialize tracker frames with error handling
+    local success, err
+    
+    success, err = pcall(function()
+        trackerBaseFrame = TrackerBaseFrame.Initialize()
+    end)
+    if not success then
+        Questie:Print("|cFFFF0000[QuestieTracker] ERROR: Failed to initialize base frame: " .. tostring(err) .. "|r")
+        return
+    end
+    Questie:Print("[QuestieTracker] Base frame initialized")
+    
+    success, err = pcall(function()
+        trackerHeaderFrame = TrackerHeaderFrame.Initialize(trackerBaseFrame)
+    end)
+    if not success then
+        Questie:Print("|cFFFF0000[QuestieTracker] ERROR: Failed to initialize header frame: " .. tostring(err) .. "|r")
+        return
+    end
+    Questie:Print("[QuestieTracker] Header frame initialized")
+    
+    success, err = pcall(function()
+        trackerQuestFrame = TrackerQuestFrame.Initialize(trackerBaseFrame, trackerHeaderFrame)
+    end)
+    if not success then
+        Questie:Print("|cFFFF0000[QuestieTracker] ERROR: Failed to initialize quest frame: " .. tostring(err) .. "|r")
+        return
+    end
+    Questie:Print("[QuestieTracker] Quest frame initialized")
 
     -- Initialize tracker functions
     TrackerLinePool.Initialize(trackerQuestFrame)
     TrackerFadeTicker.Initialize(trackerBaseFrame, trackerHeaderFrame)
     QuestieTracker.started = true
     
+    Questie:Print("|cFF00FF00[QuestieTracker] Initialization complete! Tracker started successfully.|r")
     Questie:Debug(Questie.DEBUG_CRITICAL, "[QuestieTracker] Initialization complete, tracker started")
 
     -- Initialize hooks
