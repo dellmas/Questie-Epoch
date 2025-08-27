@@ -1093,41 +1093,49 @@ end
 ---@param questId QuestId
 ---@return Quest|nil @The quest object or nil if the quest is missing
 function QuestieDB.GetQuest(questId) -- /dump QuestieDB.GetQuest(867)
-    if not questId then
-        Questie:Debug(Questie.DEBUG_CRITICAL, "[QuestieDB.GetQuest] No questId.")
+    -- Wrap entire function in error handler
+    local success, result = pcall(function()
+        if not questId then
+            Questie:Debug(Questie.DEBUG_CRITICAL, "[QuestieDB.GetQuest] No questId.")
+            return nil
+        end
+        
+        -- Handle case where questId might be passed as a table
+        if type(questId) == "table" then
+            if questId.Id then
+                questId = questId.Id
+            elseif questId == QuestieDB then
+                -- Critical error - QuestieDB itself was passed as questId
+                -- This is likely from incorrect method call syntax (: vs .)
+                Questie:Print("|cFFFF0000[CRITICAL ERROR] QuestieDB was passed as questId!|r")
+                Questie:Print("|cFFFFFF00This is usually caused by using : instead of . when calling GetQuest|r")
+                Questie:Print("|cFFFFFF00Check QuestieDataCollector or other modules for incorrect syntax|r")
+                return nil
+            else
+                -- Unknown table passed
+                Questie:Debug(Questie.DEBUG_CRITICAL, "[QuestieDB.GetQuest] questId is unknown table type")
+                return nil
+            end
+        end
+        
+        -- Ensure questId is a number
+        questId = tonumber(questId)
+        if not questId then
+            Questie:Debug(Questie.DEBUG_CRITICAL, "[QuestieDB.GetQuest] questId could not be converted to number.")
+            return nil
+        end
+        
+        -- Return cached or continue to load
+        return questId
+    end)
+    
+    if not success then
+        Questie:Print("|cFFFF0000[ERROR] GetQuest failed: " .. tostring(result) .. "|r")
         return nil
     end
     
-    -- Handle case where questId might be passed as a table
-    if type(questId) == "table" then
-        if questId.Id then
-            questId = questId.Id
-        else
-            -- Show what's in the table for debugging
-            local tableInfo = "Table contents: "
-            local count = 0
-            for k, v in pairs(questId) do
-                if count < 5 then  -- Limit output
-                    tableInfo = tableInfo .. tostring(k) .. "=" .. tostring(v) .. ", "
-                    count = count + 1
-                end
-            end
-            -- This looks like QuestieDB itself is being passed!
-            if questId == QuestieDB then
-                Questie:Print("|cFFFF0000[ERROR] QuestieDB itself was passed as questId!|r")
-            end
-            Questie:Debug(Questie.DEBUG_CRITICAL, "[QuestieDB.GetQuest] questId is a table without Id field. " .. tableInfo)
-            -- Get a more detailed stack trace
-            local trace = debugstack(2, 3, 0)
-            Questie:Print("|cFFFFFF00Stack trace:|r " .. (trace:sub(1, 200) or "unknown"))
-            return nil
-        end
-    end
-    
-    -- Ensure questId is a number
-    questId = tonumber(questId)
+    questId = result
     if not questId then
-        Questie:Debug(Questie.DEBUG_CRITICAL, "[QuestieDB.GetQuest] questId could not be converted to number.")
         return nil
     end
     
@@ -1163,29 +1171,38 @@ function QuestieDB.GetQuest(questId) -- /dump QuestieDB.GetQuest(867)
                 end
             end
             
-            -- Create minimal stub data for the tracker
-            -- Use different prefix based on quest ID range
-            local prefix = questId >= 26000 and "[Epoch] " or "[Missing] "
-            rawdata = {
-                prefix .. (questTitle or ("Quest " .. questId)), -- name
-                {}, -- startedBy (empty table instead of nil)
-                {}, -- finishedBy (empty table instead of nil)
-                1,   -- minLevel (default)
-                60,  -- questLevel (default max)
-                0,   -- requiredRaces (all)
-                0,   -- requiredClasses (all)
-                nil, -- objectivesText
-                nil, -- triggerEnd
-                nil, -- objectives
-                nil, -- sourceItemId
-                nil, -- preQuestGroup
-                nil, -- preQuestSingle
-                nil, -- childQuests
-                nil, -- inGroupWith
-                nil, -- exclusiveTo
-                0,   -- zoneOrSort (unknown zone)
-            }
-            Questie:Debug(Questie.DEBUG_DEVELOP, "[QuestieDB.GetQuest] Created runtime stub for Epoch quest:", questId)
+            -- Create minimal stub data for the tracker with error protection
+            local stubSuccess, stubData = pcall(function()
+                -- Use different prefix based on quest ID range
+                local prefix = questId >= 26000 and "[Epoch] " or "[Missing] "
+                return {
+                    prefix .. (questTitle or ("Quest " .. questId)), -- name
+                    {}, -- startedBy (empty table instead of nil)
+                    {}, -- finishedBy (empty table instead of nil)
+                    1,   -- minLevel (default)
+                    60,  -- questLevel (default max)
+                    0,   -- requiredRaces (all)
+                    0,   -- requiredClasses (all)
+                    nil, -- objectivesText
+                    nil, -- triggerEnd
+                    nil, -- objectives
+                    nil, -- sourceItemId
+                    nil, -- preQuestGroup
+                    nil, -- preQuestSingle
+                    nil, -- childQuests
+                    nil, -- inGroupWith
+                    nil, -- exclusiveTo
+                    0,   -- zoneOrSort (unknown zone)
+                }
+            end)
+            
+            if stubSuccess then
+                rawdata = stubData
+                Questie:Debug(Questie.DEBUG_DEVELOP, "[QuestieDB.GetQuest] Created runtime stub for quest:", questId)
+            else
+                Questie:Print("|cFFFF0000[ERROR] Failed to create stub for quest " .. questId .. "|r")
+                return nil
+            end
         else
             return nil
         end
@@ -1221,14 +1238,24 @@ function QuestieDB.GetQuest(questId) -- /dump QuestieDB.GetQuest(867)
     ---@field public reputationReward ReputationPair[]
     ---@field public extraObjectives ExtraObjective[]
     ---@field public requiredMaxLevel Level
-    local QO = {
-        Id = questId
-    }
+    -- Wrap quest object creation in error handler to prevent single quest from breaking everything
+    local createSuccess, QO = pcall(function()
+        local questObj = {
+            Id = questId
+        }
 
-    -- General filling of the QuestObjective with all database values
-    local questKeys = QuestieDB.questKeys
-    for stringKey, intKey in pairs(questKeys) do
-        QO[stringKey] = rawdata[intKey]
+        -- General filling of the QuestObjective with all database values
+        local questKeys = QuestieDB.questKeys
+        for stringKey, intKey in pairs(questKeys) do
+            questObj[stringKey] = rawdata[intKey]
+        end
+        
+        return questObj
+    end)
+    
+    if not createSuccess then
+        Questie:Print("|cFFFF0000[ERROR] Failed to create quest object for ID " .. questId .. ": " .. tostring(QO) .. "|r")
+        return nil
     end
 
     local questLevel, requiredLevel = QuestieLib.GetTbcLevel(questId)

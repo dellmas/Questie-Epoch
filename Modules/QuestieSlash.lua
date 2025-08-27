@@ -110,74 +110,176 @@ function QuestieSlash.HandleCommands(input)
             QuestieTracker:ResetLocation()
         elseif subCommand == "debug" then
             -- Debug command to diagnose tracker issues
-            Questie:Print("|cFF00FF00=== Questie Tracker Debug Info ===|r")
+            local debugOutput = {}
+            table.insert(debugOutput, "=== QUESTIE TRACKER DEBUG INFO ===")
+            table.insert(debugOutput, "Version: " .. GetAddOnMetadata("Questie", "Version"))
+            table.insert(debugOutput, "Please copy ALL text below and share on GitHub")
+            table.insert(debugOutput, "")
             
             -- Enable debug mode temporarily for this session
-            local oldDebugEnabled = Questie.db.profile.debugEnabled
-            local oldDebugLevel = Questie.db.profile.debugLevel
             Questie.db.profile.debugEnabled = true
             Questie.db.profile.debugEnabledPrint = true
-            Questie.db.profile.debugLevel = 7 -- Enable all debug levels (CRITICAL=1, ELEVATED=2, INFO=4)
-            Questie:Print("|cFFFFFF00Debug mode temporarily enabled for this session|r")
+            Questie.db.profile.debugLevel = 7
+            table.insert(debugOutput, "Debug mode: ENABLED")
+            table.insert(debugOutput, "")
             
-            Questie:Print("Tracker started: " .. tostring(QuestieTracker.started or false))
-            Questie:Print("Tracker enabled in profile: " .. tostring(Questie.db and Questie.db.profile and Questie.db.profile.trackerEnabled or false))
+            table.insert(debugOutput, "TRACKER STATUS:")
+            table.insert(debugOutput, "  Started: " .. tostring(QuestieTracker.started or false))
+            table.insert(debugOutput, "  Enabled: " .. tostring(Questie.db and Questie.db.profile and Questie.db.profile.trackerEnabled or false))
             
             if Questie.db and Questie.db.char then
-                Questie:Print("TrackerHiddenQuests type: " .. type(Questie.db.char.TrackerHiddenQuests))
-                Questie:Print("TrackedQuests type: " .. type(Questie.db.char.TrackedQuests))
-                Questie:Print("AutoUntrackedQuests type: " .. type(Questie.db.char.AutoUntrackedQuests))
+                table.insert(debugOutput, "  TrackerHiddenQuests: " .. type(Questie.db.char.TrackerHiddenQuests))
+                table.insert(debugOutput, "  TrackedQuests: " .. type(Questie.db.char.TrackedQuests))
+                table.insert(debugOutput, "  AutoUntrackedQuests: " .. type(Questie.db.char.AutoUntrackedQuests))
             else
-                Questie:Print("|cFFFF0000Database char data not available!|r")
+                table.insert(debugOutput, "  ERROR: Database char data not available!")
             end
+            table.insert(debugOutput, "")
             
             -- Check frame visibility
+            table.insert(debugOutput, "FRAME STATUS:")
             if Questie_BaseFrame then
-                Questie:Print("Base frame exists: Yes")
-                Questie:Print("Base frame visible: " .. tostring(Questie_BaseFrame:IsVisible()))
-                Questie:Print("Base frame shown: " .. tostring(Questie_BaseFrame:IsShown()))
+                table.insert(debugOutput, "  Exists: Yes")
+                table.insert(debugOutput, "  Visible: " .. tostring(Questie_BaseFrame:IsVisible()))
+                table.insert(debugOutput, "  Shown: " .. tostring(Questie_BaseFrame:IsShown()))
                 local point, relativeTo, relativePoint, x, y = Questie_BaseFrame:GetPoint()
-                Questie:Print(string.format("Base frame position: %s, %.1f, %.1f", tostring(point), x or 0, y or 0))
-                Questie:Print("Base frame width: " .. Questie_BaseFrame:GetWidth() .. ", height: " .. Questie_BaseFrame:GetHeight())
+                table.insert(debugOutput, string.format("  Position: %s (%.1f, %.1f)", tostring(point), x or 0, y or 0))
+                table.insert(debugOutput, string.format("  Size: %.0fx%.0f", Questie_BaseFrame:GetWidth(), Questie_BaseFrame:GetHeight()))
                 
-                -- Check if frame is off screen
                 local screenWidth = GetScreenWidth()
                 local screenHeight = GetScreenHeight()
-                if x and y then
-                    if x > screenWidth or x < -screenWidth or y > screenHeight or y < -screenHeight then
-                        Questie:Print("|cFFFF0000WARNING: Frame appears to be off-screen!|r")
-                        Questie:Print("Try /questie tracker reset to reset position")
-                    end
+                if x and y and (x > screenWidth or x < -screenWidth or y > screenHeight or y < -screenHeight) then
+                    table.insert(debugOutput, "  WARNING: Frame appears OFF-SCREEN!")
+                    table.insert(debugOutput, "  Try: /questie tracker reset")
                 end
             else
-                Questie:Print("|cFFFF0000Base frame does NOT exist!|r")
+                table.insert(debugOutput, "  ERROR: Base frame does NOT exist!")
             end
-            
-            -- Try to reinitialize if not started
-            if not QuestieTracker.started then
-                Questie:Print("Attempting to reinitialize tracker...")
-                QuestieTracker.Initialize()
-            else
-                Questie:Print("Tracker is already initialized")
-                Questie:Print("Forcing tracker update...")
-                QuestieTracker:Update()
-                Questie:Print("Tracker update complete")
-            end
+            table.insert(debugOutput, "")
             
             -- Check for quest issues
-            Questie:Print("|cFF00FF00=== Checking Quest Log ===|r")
+            table.insert(debugOutput, "QUEST LOG CHECK:")
             local questCount = 0
+            local failedQuests = {}
             for i = 1, GetNumQuestLogEntries() do
                 local title, level, _, _, _, _, _, questId = GetQuestLogTitle(i)
                 if questId and questId > 0 then
                     questCount = questCount + 1
-                    local questData = QuestieDB.GetQuest(questId)
-                    if not questData then
-                        Questie:Print(string.format("|cFFFF0000Quest %d '%s' FAILED to load data!|r", questId, title or "Unknown"))
+                    local success, questData = pcall(function() return QuestieDB.GetQuest(questId) end)
+                    if not success or not questData then
+                        table.insert(failedQuests, string.format("  FAILED: Quest %d '%s'", questId, title or "Unknown"))
                     end
                 end
             end
-            Questie:Print(string.format("Total quests in log: %d", questCount))
+            table.insert(debugOutput, "  Total quests: " .. questCount)
+            if #failedQuests > 0 then
+                table.insert(debugOutput, "  Failed to load:")
+                for _, msg in ipairs(failedQuests) do
+                    table.insert(debugOutput, msg)
+                end
+            else
+                table.insert(debugOutput, "  All quests loaded successfully")
+            end
+            table.insert(debugOutput, "")
+            
+            -- Try to reinitialize if needed
+            if not QuestieTracker.started then
+                table.insert(debugOutput, "ACTION: Attempting to reinitialize tracker...")
+                QuestieTracker.Initialize()
+            end
+            
+            -- Create copyable window (based on export window code)
+            local outputText = table.concat(debugOutput, "\n")
+            
+            -- Create frame if it doesn't exist
+            if not QuestieDebugFrame then
+                local f = CreateFrame("Frame", "QuestieDebugFrame", UIParent)
+                f:SetFrameStrata("DIALOG")
+                f:SetWidth(600)
+                f:SetHeight(400)
+                f:SetPoint("CENTER")
+                f:SetMovable(true)
+                f:EnableMouse(true)
+                f:RegisterForDrag("LeftButton")
+                f:SetScript("OnDragStart", f.StartMoving)
+                f:SetScript("OnDragStop", f.StopMovingOrSizing)
+                
+                -- Use Questie's frame style
+                f:SetBackdrop({
+                    bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
+                    edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
+                    tile = true, tileSize = 32, edgeSize = 32,
+                    insets = { left = 11, right = 12, top = 12, bottom = 11 }
+                })
+                
+                -- Title
+                local title = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+                title:SetPoint("TOP", 0, -20)
+                title:SetText("|cFF00FF00Questie Debug Output|r")
+                
+                -- Instructions
+                local step1 = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+                step1:SetPoint("TOP", title, "BOTTOM", 0, -8)
+                step1:SetText("|cFFFFFFFFStep 1:|r Click 'Select All' button below")
+                
+                local step2 = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+                step2:SetPoint("TOP", step1, "BOTTOM", 0, -4)
+                step2:SetText("|cFFFFFFFFStep 2:|r Copy (Ctrl+C) and paste into GitHub issue #1")
+                
+                -- Scroll frame
+                local scrollFrame = CreateFrame("ScrollFrame", "QuestieDebugScrollFrame", f, "UIPanelScrollFrameTemplate")
+                scrollFrame:SetPoint("TOPLEFT", 20, -80)
+                scrollFrame:SetPoint("BOTTOMRIGHT", -40, 60)
+                
+                -- Edit box
+                local editBox = CreateFrame("EditBox", "QuestieDebugEditBox", scrollFrame)
+                editBox:SetMultiLine(true)
+                editBox:SetMaxLetters(99999)
+                editBox:SetSize(540, 800)
+                editBox:SetFont("Interface\\AddOns\\Questie\\Fonts\\VeraMono.ttf", 10)
+                editBox:SetAutoFocus(false)
+                editBox:SetScript("OnEscapePressed", function() f:Hide() end)
+                editBox:SetScript("OnTextChanged", function(self, userInput)
+                    if userInput then
+                        self:SetText(outputText)
+                        self:HighlightText()
+                    end
+                end)
+                
+                scrollFrame:SetScrollChild(editBox)
+                f.editBox = editBox
+                
+                -- Select All button
+                local copyButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+                copyButton:SetPoint("BOTTOMLEFT", 40, 20)
+                copyButton:SetWidth(120)
+                copyButton:SetHeight(25)
+                copyButton:SetText("Select All")
+                copyButton:SetScript("OnClick", function()
+                    editBox:SetFocus()
+                    editBox:HighlightText()
+                    DEFAULT_CHAT_FRAME:AddMessage("|cFF00FF00Text selected! Now press Ctrl+C to copy.|r", 0, 1, 0)
+                end)
+                
+                -- Help text
+                local helpText = f:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+                helpText:SetPoint("BOTTOM", copyButton, "TOP", 60, 5)
+                helpText:SetText("|cFFFFFF00Tip: If Ctrl+C doesn't work, unbind it in Key Bindings|r")
+                
+                -- Close button
+                local closeButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+                closeButton:SetPoint("BOTTOMRIGHT", -40, 20)
+                closeButton:SetWidth(100)
+                closeButton:SetHeight(25)
+                closeButton:SetText("Close")
+                closeButton:SetScript("OnClick", function() f:Hide() end)
+            end
+            
+            QuestieDebugFrame.editBox:SetText(outputText)
+            QuestieDebugFrame.editBox:HighlightText(0, 0)
+            QuestieDebugFrame:Show()
+            
+            Questie:Print("|cFF00FF00Debug window opened - Click 'Select All' then press Ctrl+C to copy|r")
         else
             QuestieTracker:Toggle()
         end
