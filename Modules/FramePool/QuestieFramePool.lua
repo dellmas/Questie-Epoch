@@ -165,6 +165,11 @@ function _QuestieFramePool:QuestieCreateFrame()
     --Questie:Debug(Questie.DEBUG_SPAM, "[QuestieFramePool:QuestieCreateFrame]")
     numberOfFrames = numberOfFrames + 1
     local newFrame = QuestieFramePool.Qframe:New(numberOfFrames, MapIconTooltip.Show)
+    
+    if not newFrame then
+        Questie:Error("[QuestieFramePool] Failed to create frame " .. numberOfFrames)
+        return nil
+    end
 
     tinsert(allFrames, newFrame)
     return newFrame

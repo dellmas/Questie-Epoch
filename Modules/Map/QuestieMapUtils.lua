@@ -26,7 +26,7 @@ function QuestieMap.utils:SetDrawOrder(frame)
     else
         local frameLevel = WorldMapFrame:GetFrameLevel() + 7
         local frameStrata = WorldMapFrame:GetFrameStrata()
-        frame:SetParent(WorldMapFrame)
+        frame:SetParent(WorldMapButton or WorldMapFrame)
         frame:SetFrameStrata(frameStrata)
         frame:SetFrameLevel(frameLevel)
     end
