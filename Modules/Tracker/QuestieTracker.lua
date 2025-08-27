@@ -146,6 +146,11 @@ function QuestieTracker.Initialize()
 
     -- Initialize hooks
     QuestieTracker:HookBaseTracker()
+    
+    -- Force initial update to show tracker if there are quests
+    C_Timer.After(0.5, function()
+        QuestieTracker:Update()
+    end)
 
     -- Insures all other data we're getting from other addons and WoW is loaded. There are edge
     -- cases where Questie loads too fast before everything else is available.
@@ -271,6 +276,163 @@ function QuestieTracker.Initialize()
             QuestieTracker:Update()
             trackerBaseFrame:Hide()
         end)
+    end)
+end
+
+function QuestieTracker:CheckStatus()
+    if not trackerBaseFrame then
+        print("|cFFFF0000[Questie]|r Tracker not initialized!")
+        return
+    end
+    
+    local visible = trackerBaseFrame:IsShown()
+    local point, relativeTo, relativePoint, xOfs, yOfs = trackerBaseFrame:GetPoint()
+    local width = trackerBaseFrame:GetWidth()
+    local height = trackerBaseFrame:GetHeight()
+    
+    print("|cFF00FF00[Questie]|r Tracker Status:")
+    print("  Visible: " .. tostring(visible))
+    print("  Position: " .. (point or "nil") .. " x:" .. (xOfs or 0) .. " y:" .. (yOfs or 0))
+    print("  Size: " .. width .. "x" .. height)
+    print("  Quest count: " .. tostring(GetNumQuestLogEntries()) .. " in log")
+    
+    local tracked = 0
+    if QuestiePlayer.currentQuestlog then
+        for questId, quest in pairs(QuestiePlayer.currentQuestlog) do
+            if type(quest) == "table" then
+                local isUntracked = Questie.db.char.AutoUntrackedQuests and Questie.db.char.AutoUntrackedQuests[questId]
+                if not isUntracked then
+                    tracked = tracked + 1
+                end
+            end
+        end
+    end
+    print("  Tracked: " .. tracked .. " quests")
+end
+
+function QuestieTracker:ForceScanQuests()
+    print("|cFF00FF00[Questie]|r Force scanning all quests...")
+    
+    -- Clear and rebuild the cache from scratch
+    local cache = QuestLogCache.questLog_DO_NOT_MODIFY
+    
+    -- Clear existing cache
+    for k in pairs(cache) do
+        cache[k] = nil
+    end
+    
+    local count = 0
+    local questList = {}
+    
+    -- Scan all quests in the quest log
+    for i = 1, GetNumQuestLogEntries() do
+        local title, level, questTag, isHeader, isCollapsed, isComplete, frequency, questId = GetQuestLogTitle(i)
+        if not isHeader and questId and questId > 0 then
+            -- Get objectives for this quest
+            local objectives = {}
+            SelectQuestLogEntry(i)
+            local numObjectives = GetNumQuestLeaderBoards(i)
+            
+            if numObjectives and numObjectives > 0 then
+                for objIndex = 1, numObjectives do
+                    local description, objectiveType, isCompleted = GetQuestLogLeaderBoard(objIndex, i)
+                    if description then
+                        objectives[objIndex] = {
+                            description = description,
+                            type = objectiveType,
+                            finished = isCompleted,
+                            numFulfilled = 0,
+                            numRequired = 0,
+                        }
+                    end
+                end
+            end
+            
+            cache[questId] = {
+                title = title,
+                level = level,
+                questTag = questTag,
+                isComplete = isComplete,
+                objectives = objectives,
+            }
+            count = count + 1
+            table.insert(questList, questId .. ":" .. (title or "Unknown"))
+        end
+    end
+    
+    print("|cFF00FF00[Questie]|r Added " .. count .. " quests to cache:")
+    for _, info in ipairs(questList) do
+        print("  " .. info)
+    end
+    
+    -- Now rebuild currentQuestlog
+    QuestieQuest:GetAllQuestIds()
+    
+    -- Check what's in currentQuestlog
+    local logCount = 0
+    for _ in pairs(QuestiePlayer.currentQuestlog) do
+        logCount = logCount + 1
+    end
+    print("|cFF00FF00[Questie]|r currentQuestlog now has " .. logCount .. " quests")
+    
+    -- Force update
+    QuestieTracker:Update()
+    
+    print("|cFF00FF00[Questie]|r Force scan complete")
+end
+
+function QuestieTracker:ForceShow()
+    if not trackerBaseFrame then
+        print("|cFFFF0000[Questie]|r Tracker not initialized!")
+        return
+    end
+    
+    print("|cFF00FF00[Questie]|r Forcing tracker to show...")
+    
+    -- Debug: Check what quests we have
+    local questCount = 0
+    local trackedCount = 0
+    if QuestiePlayer.currentQuestlog then
+        for questId, quest in pairs(QuestiePlayer.currentQuestlog) do
+            questCount = questCount + 1
+            if type(quest) == "table" then
+                local isUntracked = Questie.db.char.AutoUntrackedQuests and Questie.db.char.AutoUntrackedQuests[questId]
+                if not isUntracked then
+                    trackedCount = trackedCount + 1
+                    print("  Tracking quest " .. questId .. ": " .. (quest.name or "Unknown"))
+                end
+            end
+        end
+    end
+    print("|cFF00FF00[Questie]|r Found " .. questCount .. " quests, " .. trackedCount .. " tracked")
+    
+    -- Force show the frame
+    trackerBaseFrame:Show()
+    trackerBaseFrame:SetSize(200, 400)  -- Set a reasonable size
+    
+    -- Check if header frame exists
+    if trackerHeaderFrame then
+        trackerHeaderFrame:Show()
+        print("|cFF00FF00[Questie]|r Header frame shown")
+    else
+        print("|cFFFF0000[Questie]|r No header frame!")
+    end
+    
+    -- Force update
+    print("|cFF00FF00[Questie]|r Calling Update()...")
+    QuestieTracker:Update()
+    
+    -- Check status after update
+    C_Timer.After(0.1, function()
+        print("|cFF00FF00[Questie]|r After forcing:")
+        print("  Visible: " .. tostring(trackerBaseFrame:IsShown()))
+        print("  Size: " .. trackerBaseFrame:GetWidth() .. "x" .. trackerBaseFrame:GetHeight())
+        
+        -- Check line pool
+        if TrackerLinePool then
+            local lineCount = TrackerLinePool.GetCurrentLine and TrackerLinePool.GetCurrentLine() or 0
+            print("  Line pool has " .. tostring(lineCount) .. " lines")
+        end
     end)
 end
 
@@ -1968,7 +2130,9 @@ function QuestieTracker:HookBaseTracker()
         if not Questie.db.profile.autoTrackQuests then
             return Questie.db.char.TrackedQuests[questId or -1]
         else
-            return questId and QuestiePlayer.currentQuestlog[questId] and (not (Questie.db.char.AutoUntrackedQuests and Questie.db.char.AutoUntrackedQuests[questId]))
+            local inQuestlog = questId and QuestiePlayer.currentQuestlog[questId]
+            local isUntracked = Questie.db.char.AutoUntrackedQuests and Questie.db.char.AutoUntrackedQuests[questId]
+            return inQuestlog and not isUntracked
         end
     end
 
@@ -2148,10 +2312,17 @@ function QuestieTracker:AQW_Insert(index, expire)
             end
         else
             if Questie.db.char.AutoUntrackedQuests and Questie.db.char.AutoUntrackedQuests[questId] then
+                -- Regular click on an untracked quest - track it
                 Questie.db.char.AutoUntrackedQuests[questId] = nil
-
-                -- Add quest to the tracker
+                -- The quest will now be tracked because it's not in AutoUntrackedQuests
             elseif IsShiftKeyDown() and QuestLogFrame:IsShown() then
+                -- Shift-click to untrack
+                if not Questie.db.char.AutoUntrackedQuests then
+                    Questie.db.char.AutoUntrackedQuests = {}
+                end
+                Questie.db.char.AutoUntrackedQuests[questId] = true
+            else
+                -- Regular click on an already tracked quest - untrack it
                 if not Questie.db.char.AutoUntrackedQuests then
                     Questie.db.char.AutoUntrackedQuests = {}
                 end

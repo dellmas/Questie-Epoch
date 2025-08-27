@@ -710,17 +710,18 @@ function TrackerUtils:GetSortedQuestIds()
     local sortObj = Questie.db.profile.trackerSortObjectives
     -- Update quest objectives
     for questId, quest in pairs(QuestiePlayer.currentQuestlog) do
-        if quest then
+        -- Skip if quest is just a number (happens when QuestieDB.GetQuest fails)
+        if quest and type(quest) == "table" then
             -- Insert Quest Ids into sortedQuestIds table
             tinsert(sortedQuestIds, questId)
 
             -- Create questDetails table keys and insert values
-            questDetails[quest.Id] = {}
-            questDetails[quest.Id].quest = quest
-            questDetails[quest.Id].zoneName = _GetZoneName(quest.zoneOrSort, quest.Id)
+            questDetails[quest.Id or questId] = {}
+            questDetails[quest.Id or questId].quest = quest
+            questDetails[quest.Id or questId].zoneName = _GetZoneName(quest.zoneOrSort, quest.Id or questId)
 
             if quest:IsComplete() == 1 or (not next(quest.Objectives)) then
-                questDetails[quest.Id].questCompletePercent = 1
+                questDetails[quest.Id or questId].questCompletePercent = 1
             else
                 local percent = 0
                 local count = 0
@@ -748,7 +749,7 @@ function TrackerUtils:GetSortedQuestIds()
                     percent = 0
                 end
 
-                questDetails[quest.Id].questCompletePercent = percent
+                questDetails[quest.Id or questId].questCompletePercent = percent
             end
         end
     end

@@ -1103,7 +1103,14 @@ function QuestieDB.GetQuest(questId) -- /dump QuestieDB.GetQuest(867)
         if questId.Id then
             questId = questId.Id
         else
-            Questie:Debug(Questie.DEBUG_CRITICAL, "[QuestieDB.GetQuest] questId is a table without Id field.")
+            Questie:Debug(Questie.DEBUG_CRITICAL, "[QuestieDB.GetQuest] questId is a table without Id field. Stack trace:")
+            -- Get a simple stack trace to find the caller
+            local trace = debugstack(2, 1, 0)
+            local file = trace:match("([^\\/:]+%.lua)")
+            local line = trace:match(":(%d+):")
+            if file and line then
+                Questie:Debug(Questie.DEBUG_CRITICAL, "  Called from: " .. file .. ":" .. line)
+            end
             return nil
         end
     end
@@ -1653,33 +1660,42 @@ function QuestieDB:GetQuestsByZoneId(zoneId)
     local alternativeZoneID = ZoneDB:GetAlternativeZoneId(zoneId)
     -- loop over all quests to populate a zone
     for qid, _ in pairs(QuestieDB.QuestPointers or QuestieDB.questData) do
-        local quest = QuestieDB.GetQuest(qid);
-        if quest then
-            if quest.zoneOrSort > 0 then
-                if (quest.zoneOrSort == zoneId or (alternativeZoneID and quest.zoneOrSort == alternativeZoneID)) then
-                    zoneQuests[qid] = quest;
-                end
-            elseif quest.Starts.NPC and (not zoneQuests[qid]) then
-                local npc = QuestieDB:GetNPC(quest.Starts.NPC[1]);
-                if npc and npc.friendly and npc.spawns then
-                    for zone, _ in pairs(npc.spawns) do
-                        if zone == zoneId  or (alternativeZoneID and zone == alternativeZoneID) then
+        -- Ensure qid is a number (sometimes it might be a table)
+        if type(qid) == "table" then
+            -- Skip invalid entries
+            Questie:Debug(Questie.DEBUG_DEVELOP, "[GetQuestsByZoneId] Skipping table questId entry")
+        else
+            qid = tonumber(qid)
+            if qid then
+                local quest = QuestieDB.GetQuest(qid);
+                if quest then
+                    if quest.zoneOrSort > 0 then
+                        if (quest.zoneOrSort == zoneId or (alternativeZoneID and quest.zoneOrSort == alternativeZoneID)) then
                             zoneQuests[qid] = quest;
+                        end
+                    elseif quest.Starts.NPC and (not zoneQuests[qid]) then
+                        local npc = QuestieDB:GetNPC(quest.Starts.NPC[1]);
+                        if npc and npc.friendly and npc.spawns then
+                            for zone, _ in pairs(npc.spawns) do
+                                if zone == zoneId  or (alternativeZoneID and zone == alternativeZoneID) then
+                                    zoneQuests[qid] = quest;
+                                end
+                            end
+                        end
+                    elseif quest.Starts.GameObject and (not zoneQuests[qid]) then
+                        local obj = QuestieDB:GetObject(quest.Starts.GameObject[1]);
+                        if obj and obj.spawns then
+                            for zone, _ in pairs(obj.spawns) do
+                                if zone == zoneId  or (alternativeZoneID and zone == alternativeZoneID) then
+                                    zoneQuests[qid] = quest;
+                                end
+                            end
                         end
                     end
                 end
-            elseif quest.Starts.GameObject and (not zoneQuests[qid]) then
-                local obj = QuestieDB:GetObject(quest.Starts.GameObject[1]);
-                if obj and obj.spawns then
-                    for zone, _ in pairs(obj.spawns) do
-                        if zone == zoneId  or (alternativeZoneID and zone == alternativeZoneID) then
-                            zoneQuests[qid] = quest;
-                        end
-                    end
-                end
-            end
-        end
-    end
+            end -- close if qid
+        end -- close else (not table)
+    end -- close for loop
     _QuestieDB.zoneCache[zoneId] = zoneQuests;
     return zoneQuests;
 end

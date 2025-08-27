@@ -82,53 +82,97 @@ function QuestieDataCollector:CheckExistingQuests()
         -- Use QuestieCompat version which handles WoW 3.3.5 properly
         local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID = QuestieCompat.GetQuestLogTitle(i)
         
-        if not isHeader and questID and questID > 0 then
-            -- Debug: Show all quests being checked
-            -- Silently check quests
+        if not isHeader and questID then
+            -- Make a local copy to avoid any potential corruption
+            local safeQuestID = questID
             
-            -- Only track Epoch quests (26000-26999)
-            local questData = QuestieDB:GetQuest(questID)
-            local needsTracking = false
-            local trackReason = nil
-            local isEpochQuest = (questID >= 26000 and questID < 27000)
-            
-            if isEpochQuest then
-                if not questData then
-                    needsTracking = true
-                    trackReason = "missing Epoch quest"
-                elseif questData.name and string.find(questData.name, "%[Epoch%]") then
-                    needsTracking = true
-                    trackReason = "has [Epoch] prefix"
-                elseif _trackAllEpochQuests then
-                    -- Track all Epoch quests to improve their data
-                    needsTracking = true
-                    trackReason = "is Epoch quest (26xxx)"
-                end
-            end
-            
-            if needsTracking then
-                -- This quest needs data collection
-                -- Silently track quest
-                if not _activeTracking[questID] then
-                    _activeTracking[questID] = true
-                    trackedCount = trackedCount + 1
-                    
-                    -- Initialize quest data if not exists
-                    if not QuestieDataCollection.quests[questID] then
-                        QuestieDataCollection.quests[questID] = {
-                            id = questID,
-                            name = title or ("Quest " .. questID),
-                            level = level,
-                            objectives = {},
-                            npcs = {},
-                            items = {},
-                            objects = {},
-                            sessionStart = date("%Y-%m-%d %H:%M:%S")
-                        }
-                        -- Silently track quest
+            -- Ensure questID is a number (sometimes it comes as a table)
+            if type(safeQuestID) == "table" then
+                -- Debug: Log what fields the table has
+                if Questie.db.profile.debugDataCollector then
+                    local fields = {}
+                    for k,v in pairs(safeQuestID) do
+                        table.insert(fields, tostring(k) .. "=" .. tostring(v))
                     end
+                    DEFAULT_CHAT_FRAME:AddMessage("|cFFFF0000[DataCollector Debug]|r questID is table with fields: " .. table.concat(fields, ", "), 1, 0, 0)
                 end
+                
+                -- Try to extract ID from table
+                local extractedID = safeQuestID.Id or safeQuestID.ID or safeQuestID.id or safeQuestID.questID or safeQuestID.QuestID
+                if extractedID and type(extractedID) == "number" then
+                    safeQuestID = extractedID
+                else
+                    -- If we can't extract a valid ID, skip this quest
+                    safeQuestID = nil
+                end
+            elseif type(safeQuestID) ~= "number" then
+                safeQuestID = tonumber(safeQuestID)
             end
+            
+            -- Only proceed if we have a valid numeric questID
+            if safeQuestID and type(safeQuestID) == "number" and safeQuestID > 0 then
+                questID = safeQuestID  -- Reassign to the safe copy (don't redeclare)
+                -- Final safety check before calling GetQuest
+                if type(questID) ~= "number" then
+                    DEFAULT_CHAT_FRAME:AddMessage("|cFFFF0000[DataCollector ERROR]|r questID passed check but is still " .. type(questID), 1, 0, 0)
+                    -- Continue to next iteration instead of return
+                else
+                    -- Use pcall to catch any errors from GetQuest
+                    local success, questData = pcall(function()
+                        return QuestieDB:GetQuest(questID)
+                    end)
+                    
+                    if not success then
+                        -- GetQuest failed, skip this quest silently
+                        if Questie.db.profile.debugDataCollector then
+                            DEFAULT_CHAT_FRAME:AddMessage("|cFFFF0000[DataCollector]|r GetQuest failed for questID: " .. tostring(questID), 1, 0, 0)
+                        end
+                    else
+                        -- Now process the quest data
+                        local needsTracking = false
+                        local trackReason = nil
+                        local isEpochQuest = (questID >= 26000 and questID < 27000)
+                        
+                        if isEpochQuest then
+                            if not questData then
+                                needsTracking = true
+                                trackReason = "missing Epoch quest"
+                            elseif questData.name and string.find(questData.name, "%[Epoch%]") then
+                                needsTracking = true
+                                trackReason = "has [Epoch] prefix"
+                            elseif _trackAllEpochQuests then
+                                -- Track all Epoch quests to improve their data
+                                needsTracking = true
+                                trackReason = "is Epoch quest (26xxx)"
+                            end
+                        end
+                        
+                        if needsTracking then
+                            -- This quest needs data collection
+                            -- Silently track quest
+                            if not _activeTracking[questID] then
+                                _activeTracking[questID] = true
+                                trackedCount = trackedCount + 1
+                                
+                                -- Initialize quest data if not exists
+                                if not QuestieDataCollection.quests[questID] then
+                                    QuestieDataCollection.quests[questID] = {
+                                        id = questID,
+                                        name = title or ("Quest " .. questID),
+                                        level = level,
+                                        objectives = {},
+                                        npcs = {},
+                                        items = {},
+                                        objects = {},
+                                        sessionStart = date("%Y-%m-%d %H:%M:%S")
+                                    }
+                                    -- Silently track quest
+                                end
+                            end
+                        end
+                    end -- end of success check
+                end -- end of type check
+            end -- Close questID > 0 check
         end
     end
     
@@ -374,6 +418,19 @@ end
 function QuestieDataCollector:GetQuestIdFromLogIndex(index)
     local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questId = QuestieCompat.GetQuestLogTitle(index)
     
+    -- Ensure questId is a number
+    if type(questId) == "table" then
+        -- Try to extract ID from table
+        local extractedID = questId.Id or questId.ID or questId.id or questId.questID or questId.QuestID
+        if extractedID and type(extractedID) == "number" then
+            questId = extractedID
+        else
+            questId = nil
+        end
+    elseif type(questId) ~= "number" then
+        questId = tonumber(questId)
+    end
+    
     if questId and questId > 0 then
         return questId
     end
@@ -381,6 +438,19 @@ function QuestieDataCollector:GetQuestIdFromLogIndex(index)
     -- Try to find quest ID by matching title in quest log
     for i = 1, GetNumQuestLogEntries() do
         local qTitle, qLevel, _, qIsHeader, _, _, _, qId = QuestieCompat.GetQuestLogTitle(i)
+        
+        -- Ensure qId is a number
+        if type(qId) == "table" then
+            local extractedID = qId.Id or qId.ID or qId.id or qId.questID or qId.QuestID
+            if extractedID and type(extractedID) == "number" then
+                qId = extractedID
+            else
+                qId = nil
+            end
+        elseif type(qId) ~= "number" then
+            qId = tonumber(qId)
+        end
+        
         if not qIsHeader and qTitle == title and qLevel == level then
             if qId and qId > 0 then
                 return qId
@@ -543,6 +613,30 @@ end
 
 function QuestieDataCollector:OnQuestAccepted(questId)
     if not questId then return end
+    
+    -- Ensure questId is a number (sometimes it comes as a table)
+    if type(questId) == "table" then
+        -- Debug: Log what fields the table has
+        if Questie.db.profile.debugDataCollector then
+            local fields = {}
+            for k,v in pairs(questId) do
+                table.insert(fields, tostring(k) .. "=" .. tostring(v))
+            end
+            DEFAULT_CHAT_FRAME:AddMessage("|cFFFF0000[DataCollector Debug]|r OnQuestAccepted questId is table with fields: " .. table.concat(fields, ", "), 1, 0, 0)
+        end
+        
+        -- Try to extract ID from table
+        local extractedID = questId.Id or questId.ID or questId.id or questId.questID or questId.QuestID
+        if extractedID and type(extractedID) == "number" then
+            questId = extractedID
+        else
+            -- If we can't extract a valid ID, skip
+            return
+        end
+    elseif type(questId) ~= "number" then
+        questId = tonumber(questId)
+        if not questId then return end
+    end
     
     -- Double-check that data collection is enabled
     if not Questie.db.profile.enableDataCollection then
@@ -1642,10 +1736,14 @@ function QuestieDataCollector:ShowExportWindow(questId)
         purgeButton:SetHeight(25)
         purgeButton:SetText("Close & Purge Data")
         purgeButton:SetScript("OnClick", function()
-            -- Clear ALL quest data
-            QuestieDataCollection.quests = {}
+            -- Clear ALL quest data from the saved variable
+            _G.QuestieDataCollection = {
+                quests = {},
+                enableDataCollection = QuestieDataCollection.enableDataCollection
+            }
+            QuestieDataCollection = _G.QuestieDataCollection
             DEFAULT_CHAT_FRAME:AddMessage("|cFF00FF00[QUESTIE] Thank you for contributing! All quest data has been purged.|r", 0, 1, 0)
-            DEFAULT_CHAT_FRAME:AddMessage("|cFFFFFF00Remember to /reload to save the cleared state.|r", 1, 1, 0)
+            DEFAULT_CHAT_FRAME:AddMessage("|cFFFFFF00You should /reload now to save the cleared state.|r", 1, 1, 0)
             f:Hide()
         end)
         
@@ -2108,6 +2206,14 @@ SlashCmdList["QUESTIEDATACOLLECTOR"] = function(msg)
         DEFAULT_CHAT_FRAME:AddMessage("  Tracking: " .. count .. " quests", 1, 1, 1)
         
     elseif cmd == "debug" then
+        -- Toggle debug mode
+        if not Questie.db.profile.debugDataCollector then
+            Questie.db.profile.debugDataCollector = true
+            DEFAULT_CHAT_FRAME:AddMessage("|cFFFF0000[Questie Data Collector]|r Debug mode ENABLED - will show table quest IDs", 1, 0, 0)
+        else
+            Questie.db.profile.debugDataCollector = false
+            DEFAULT_CHAT_FRAME:AddMessage("|cFFFF0000[Questie Data Collector]|r Debug mode DISABLED", 1, 0, 0)
+        end
         DEFAULT_CHAT_FRAME:AddMessage("QuestieDataCollection table:", 0, 1, 1)
         if QuestieDataCollection then
             DEFAULT_CHAT_FRAME:AddMessage("  Exists: YES", 0, 1, 0)

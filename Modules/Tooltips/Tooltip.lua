@@ -267,6 +267,35 @@ function QuestieTooltips:GetTooltip(key)
     end
 
     local playerName = UnitName("player")
+    
+    -- Fallback: enrich tooltip data from remote quest logs when no per-mob tooltip cache exists
+    if IsInGroup() then
+        local me = UnitName("player")
+        for questId, qdata in pairs(tooltipData) do
+            local rq = QuestieComms.remoteQuestLogs and QuestieComms.remoteQuestLogs[questId]
+            if rq and qdata.objectivesText then
+                -- Check each objective slot
+                for objectiveIndex, objectiveData in pairs(qdata.objectivesText) do
+                    -- Check if we need to add remote player data
+                    for remoteName, remoteData in pairs(rq) do
+                        if remoteName ~= me then
+                            local playerInfo = QuestiePlayer:GetPartyMemberByName(remoteName)
+                            -- Only add if player is in party and not already in tooltip
+                            if playerInfo and (not objectiveData[remoteName]) then
+                                local remoteObjective = remoteData[objectiveIndex]
+                                if remoteObjective then
+                                    objectiveData[remoteName] = {
+                                        text = remoteObjective.text or remoteObjective.description or "",
+                                        color = remoteObjective.color or "|cFFFFFFFF"
+                                    }
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
 
     for questId, questData in pairs(tooltipData) do
         local hasObjective = false

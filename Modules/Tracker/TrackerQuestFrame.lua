@@ -83,6 +83,22 @@ function TrackerQuestFrame.Initialize(baseFrame, headerFrame)
     questFrame.ScrollChildFrame:SetSize(questFrame.ScrollFrame:GetWidth(), (questFrame.ScrollFrame:GetHeight()))
 
     questFrame.ScrollFrame:SetScrollChild(questFrame.ScrollChildFrame)
+    
+    -- Enable mouse wheel scrolling
+    questFrame.ScrollFrame:EnableMouseWheel(true)
+    questFrame.ScrollFrame:SetScript("OnMouseWheel", function(self, delta)
+        local current = self:GetVerticalScroll()
+        local maxScroll = self:GetVerticalScrollRange()
+        local scrollStep = 20
+        
+        if delta > 0 then
+            -- Scroll up
+            self:SetVerticalScroll(math.max(0, current - scrollStep))
+        else
+            -- Scroll down
+            self:SetVerticalScroll(math.min(maxScroll, current + scrollStep))
+        end
+    end)
 
     questFrame:Hide()
 
