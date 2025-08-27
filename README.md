@@ -24,7 +24,7 @@ Automatically captures quest data while you play. Quests needing validation show
 2. Complete Epoch quests normally
 3. A raid warning sound and a chatlog print will occur when you've accepted a quest not in the Epoch database, if dev mode is enabled.
 4. Export data: `/qdc export`
-5. Submit to: https://github.com/trav346/Questie-for-Epoch/issues NOTE: you must have a github account to submit issues.
+5. Submit to: https://github.com/trav346/Questie-Epoch/issues NOTE: you must have a github account to submit issues.
 
 ## Support
 Report issues or submit quest data on GitHub.
