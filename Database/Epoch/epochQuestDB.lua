@@ -251,7 +251,6 @@ local epochQuestData = {
 [26932] = {"Encroaching Worgs",{{1738}},{{1738}},nil,8,nil,nil,nil,nil,{{{45205,nil,5}}},nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,8,0,nil,nil,nil,nil,nil,nil},
 [26934] = {"Filling the Armory",{{2136}},{{2136}},nil,9,nil,nil,nil,nil,{nil,nil,{{62803,nil,6}}},nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,8,0,nil,nil,nil,nil,nil,nil},
 [26936] = {"Northshore Mine",nil,{{45886}},nil,9,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil},
-[26937] = {"Clear the Mine",{{45886}},{{45886}},nil,9,nil,nil,nil,nil,{{{45103,nil,10}}},nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,8,0,nil,nil,nil,nil,nil,nil},
 [26939] = {"Peace in Death",{{45898}},{{45898}},nil,5,nil,nil,nil,nil,{nil,{{4000009,nil}},{{62811,nil}}},62811,nil,{376},nil,nil,nil,85,nil,nil,nil,{62808,62809,62810},nil,nil,0,nil,nil,nil,nil,nil,nil},
 [26940] = {"Reclaim the Mine",{{45899}},{{45899}},nil,10,nil,nil,nil,nil,{{{45103,nil,10},{45104,nil,3}}},nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,8,0,nil,nil,nil,nil,nil,nil},
 [26942] = {"Stillwater Eels",{{45902}},{{45902}},nil,6,nil,nil,nil,nil,{nil,nil,{{60102,nil,10}}},nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,8,0,nil,nil,nil,nil,nil,nil},
