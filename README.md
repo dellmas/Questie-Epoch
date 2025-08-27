@@ -30,7 +30,7 @@ Automatically captures quest data while you play. Quests needing validation show
 Report issues or submit quest data on GitHub.
 
 ## Credits
-Based on original Questie with enhancements for Project Epoch. 
+Based on original Questie with enhancements for Project Epoch.
 Contributors: @Bennylavaa, @desizt, @esurm
 
 ## License
