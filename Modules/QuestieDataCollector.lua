@@ -621,7 +621,7 @@ function QuestieDataCollector:OnQuestAccepted(questId)
             end
         end
         
-        DEFAULT_CHAT_FRAME:AddMessage("|cFFFFFF00When complete, submit data at: github.com/trav346/Questie-for-Epoch/issues|r", 1, 1, 0)
+        DEFAULT_CHAT_FRAME:AddMessage("|cFFFFFF00When complete, submit data at: https://github.com/trav346/Questie-Epoch/issues|r", 1, 1, 0)
         DEFAULT_CHAT_FRAME:AddMessage("===========================================", 0, 1, 1)
         
         _activeTracking[questId] = true
@@ -1670,7 +1670,7 @@ function QuestieDataCollector:ShowExportWindow(questId)
         exportText = exportText .. "=== HOW TO SUBMIT THIS DATA ===\n"
         exportText = exportText .. "1. Select all text in this window (click 'Select All' button)\n"
         exportText = exportText .. "2. Copy it (Ctrl+C)\n"
-        exportText = exportText .. "3. Go to: github.com/trav346/Questie-for-Epoch/issues\n"
+        exportText = exportText .. "3. Go to: https://github.com/trav346/Questie-Epoch/issues\n"
         exportText = exportText .. "   (Note: You'll need a free GitHub account to submit)\n"
         exportText = exportText .. "4. Click 'New Issue'\n"
         -- Create comma-separated list of quest IDs for the title
@@ -1706,7 +1706,7 @@ function QuestieDataCollector:GenerateExportText(questId, data, skipInstructions
         text = "=== HOW TO SUBMIT THIS DATA ===\n"
         text = text .. "1. Select all text in this window (click 'Select All' button)\n"
         text = text .. "2. Copy it (Ctrl+C)\n"
-        text = text .. "3. Go to: github.com/trav346/Questie-for-Epoch/issues\n"
+        text = text .. "3. Go to: https://github.com/trav346/Questie-Epoch/issues\n"
         text = text .. "   (Note: You'll need a free GitHub account to submit)\n"
         text = text .. "4. Click 'New Issue'\n"
         text = text .. "5. Title: 'Missing Quest: " .. (data.name or "Unknown") .. " (" .. questId .. ")'\n"
