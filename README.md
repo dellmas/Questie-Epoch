@@ -7,8 +7,6 @@ Questie addon optimized for Project Epoch (3.3.5a) with 600+ custom quests.
 - NEW: Developer mode for community quest data collection
 - NEW: Real-time capture of NPCs, items, and objective locations with devmode enabled.
 
-**Known Issue**: Map zoom causes marker displacement (3.3.5a client limitation). Still researching a fix.
-
 ## Developer Mode
 Automatically captures quest data while you play. Quests needing validation show "[Epoch]" prefix. Credit to @desizt and @esurm for this clever addition.
 
