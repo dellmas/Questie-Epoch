@@ -134,50 +134,56 @@ function EpochDatabaseValidator:ValidateQuests(questData, npcData, itemData, obj
                 table.insert(validationErrors, string.format("Quest %d has no name!", questId))
             end
             
-            -- Validate quest starter NPCs
+            -- Validate quest starter NPCs (Questie expects {{npcId}} format)
             if startedBy and type(startedBy) == "table" then
                 for idx, npcEntry in pairs(startedBy) do
-                    -- Check if it's a nested table (which might be wrong)
-                    if type(npcEntry) == "table" then
-                        -- This could be {{npcId}} instead of {npcId}
+                    -- Check if it's NOT a nested table (which would be wrong)
+                    if type(npcEntry) == "number" then
+                        -- Direct number format is WRONG - should be {npcId}
+                        table.insert(validationErrors, string.format("Quest %d (%s) has DIRECT NUMBER in starters[%d]: should be {%d} not %d", 
+                            questId, questName or "?", idx, npcEntry, npcEntry))
+                    elseif type(npcEntry) == "table" then
+                        -- It's a table - this is correct format
                         if #npcEntry > 0 and type(npcEntry[1]) == "number" then
-                            -- It's a table containing NPC ID - this might be wrong format
-                            table.insert(validationErrors, string.format("Quest %d (%s) has NESTED TABLE in starters[%d]: should be %d not {%d}", 
-                                questId, questName or "?", idx, npcEntry[1], npcEntry[1]))
+                            local npcId = npcEntry[1]
+                            if npcData and not npcData[npcId] then
+                                table.insert(validationWarnings, string.format("Quest %d (%s) references missing starter NPC %d", 
+                                    questId, questName or "?", npcId))
+                            end
                         else
                             table.insert(validationErrors, string.format("Quest %d (%s) has invalid nested table in starters[%d]", 
                                 questId, questName or "?", idx))
                         end
-                    elseif type(npcEntry) ~= "number" then
+                    else
                         table.insert(validationErrors, string.format("Quest %d (%s) has invalid starter NPC type: %s", 
                             questId, questName or "?", type(npcEntry)))
-                    elseif npcData and not npcData[npcEntry] then
-                        table.insert(validationWarnings, string.format("Quest %d (%s) references missing starter NPC %d", 
-                            questId, questName or "?", npcEntry))
                     end
                 end
             end
             
-            -- Validate quest ender NPCs
+            -- Validate quest ender NPCs (Questie expects {{npcId}} format)
             if finishedBy and type(finishedBy) == "table" then
                 for idx, npcEntry in pairs(finishedBy) do
-                    -- Check if it's a nested table (which might be wrong)
-                    if type(npcEntry) == "table" then
-                        -- This could be {{npcId}} instead of {npcId}
+                    -- Check if it's NOT a nested table (which would be wrong)
+                    if type(npcEntry) == "number" then
+                        -- Direct number format is WRONG - should be {npcId}
+                        table.insert(validationErrors, string.format("Quest %d (%s) has DIRECT NUMBER in enders[%d]: should be {%d} not %d", 
+                            questId, questName or "?", idx, npcEntry, npcEntry))
+                    elseif type(npcEntry) == "table" then
+                        -- It's a table - this is correct format
                         if #npcEntry > 0 and type(npcEntry[1]) == "number" then
-                            -- It's a table containing NPC ID - this might be wrong format
-                            table.insert(validationErrors, string.format("Quest %d (%s) has NESTED TABLE in enders[%d]: should be %d not {%d}", 
-                                questId, questName or "?", idx, npcEntry[1], npcEntry[1]))
+                            local npcId = npcEntry[1]
+                            if npcData and not npcData[npcId] then
+                                table.insert(validationWarnings, string.format("Quest %d (%s) references missing ender NPC %d", 
+                                    questId, questName or "?", npcId))
+                            end
                         else
                             table.insert(validationErrors, string.format("Quest %d (%s) has invalid nested table in enders[%d]", 
                                 questId, questName or "?", idx))
                         end
-                    elseif type(npcEntry) ~= "number" then
+                    else
                         table.insert(validationErrors, string.format("Quest %d (%s) has invalid ender NPC type: %s", 
                             questId, questName or "?", type(npcEntry)))
-                    elseif npcData and not npcData[npcEntry] then
-                        table.insert(validationWarnings, string.format("Quest %d (%s) references missing ender NPC %d", 
-                            questId, questName or "?", npcEntry))
                     end
                 end
             end
