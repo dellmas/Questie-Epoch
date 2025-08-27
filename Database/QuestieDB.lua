@@ -1122,8 +1122,8 @@ function QuestieDB.GetQuest(questId) -- /dump QuestieDB.GetQuest(867)
             -- Create minimal stub data for the tracker
             rawdata = {
                 "[Epoch] " .. (questTitle or ("Quest " .. questId)), -- name
-                nil, -- startedBy  
-                nil, -- finishedBy
+                {}, -- startedBy (empty table instead of nil)
+                {}, -- finishedBy (empty table instead of nil)
                 1,   -- minLevel (default)
                 60,  -- questLevel (default max)
                 0,   -- requiredRaces (all)
@@ -1206,7 +1206,7 @@ function QuestieDB.GetQuest(questId) -- /dump QuestieDB.GetQuest(867)
 
     ---@type FinishedBy
     local finishedBy = QO.finishedBy
-    if finishedBy[1] then
+    if finishedBy and finishedBy[1] then
         for _, id in pairs(finishedBy[1]) do
             if id then
                 QO.Finisher = {
