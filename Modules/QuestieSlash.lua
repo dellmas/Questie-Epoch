@@ -122,6 +122,28 @@ function QuestieSlash.HandleCommands(input)
                 Questie:Print("|cFFFF0000Database char data not available!|r")
             end
             
+            -- Check frame visibility
+            if Questie_BaseFrame then
+                Questie:Print("Base frame exists: Yes")
+                Questie:Print("Base frame visible: " .. tostring(Questie_BaseFrame:IsVisible()))
+                Questie:Print("Base frame shown: " .. tostring(Questie_BaseFrame:IsShown()))
+                local point, relativeTo, relativePoint, x, y = Questie_BaseFrame:GetPoint()
+                Questie:Print(string.format("Base frame position: %s, %.1f, %.1f", tostring(point), x or 0, y or 0))
+                Questie:Print("Base frame width: " .. Questie_BaseFrame:GetWidth() .. ", height: " .. Questie_BaseFrame:GetHeight())
+                
+                -- Check if frame is off screen
+                local screenWidth = GetScreenWidth()
+                local screenHeight = GetScreenHeight()
+                if x and y then
+                    if x > screenWidth or x < -screenWidth or y > screenHeight or y < -screenHeight then
+                        Questie:Print("|cFFFF0000WARNING: Frame appears to be off-screen!|r")
+                        Questie:Print("Try /questie tracker reset to reset position")
+                    end
+                end
+            else
+                Questie:Print("|cFFFF0000Base frame does NOT exist!|r")
+            end
+            
             -- Try to reinitialize if not started
             if not QuestieTracker.started then
                 Questie:Print("Attempting to reinitialize tracker...")
