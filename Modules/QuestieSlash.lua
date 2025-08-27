@@ -60,6 +60,7 @@ function QuestieSlash.HandleCommands(input)
         print(Questie:Colorize("/questie minimap - " .. l10n("Toggles the Minimap Button for Questie"), "yellow"));
         print(Questie:Colorize("/questie journey - " .. l10n("Toggles the My Journey window"), "yellow"));
         print(Questie:Colorize("/questie tracker [show/hide/reset/debug] - " .. l10n("Toggles the Tracker. Add 'show', 'hide', 'reset', 'debug' to explicit show/hide, reset, or debug the Tracker"), "yellow"));
+        print(Questie:Colorize("/questie dumplog - " .. l10n("Export your quest log data for troubleshooting"), "yellow"));
         print(Questie:Colorize("/questie flex - " .. l10n("Flex the amount of quests you have completed so far"), "yellow"));
         print(Questie:Colorize("/questie doable [questID] - " .. l10n("Prints whether you are eligibile to do a quest"), "yellow"));
         print(Questie:Colorize("/questie version - " .. l10n("Prints Questie and client version info"), "yellow"));
@@ -101,6 +102,166 @@ function QuestieSlash.HandleCommands(input)
         return;
     end
 
+    if mainCommand == "dumplog" then
+        -- Capture complete quest log for troubleshooting
+        local dumpData = {}
+        table.insert(dumpData, "=== QUESTIE QUEST LOG DUMP ===")
+        table.insert(dumpData, "Version: " .. GetAddOnMetadata("Questie", "Version"))
+        table.insert(dumpData, "Character: " .. UnitName("player") .. " - " .. GetRealmName())
+        table.insert(dumpData, "Level: " .. UnitLevel("player") .. " " .. UnitClass("player"))
+        table.insert(dumpData, "")
+        
+        table.insert(dumpData, "QUEST LOG DATA:")
+        table.insert(dumpData, "Total Entries: " .. GetNumQuestLogEntries())
+        table.insert(dumpData, "")
+        
+        local questCount = 0
+        local missingQuests = {}
+        local questData = {}
+        
+        for i = 1, GetNumQuestLogEntries() do
+            local title, level, tag, isHeader, isCollapsed, isComplete, frequency, questId = GetQuestLogTitle(i)
+            
+            if not isHeader and questId and questId > 0 then
+                questCount = questCount + 1
+                
+                -- Capture all quest details
+                local questInfo = string.format("[%d] = { -- %s (Level %d)", 
+                    questId, 
+                    title or "Unknown", 
+                    level or 0)
+                
+                table.insert(questData, questInfo)
+                table.insert(questData, string.format("  name = \"%s\",", title or "Unknown"))
+                table.insert(questData, string.format("  level = %d,", level or 0))
+                table.insert(questData, string.format("  tag = \"%s\",", tag or ""))
+                table.insert(questData, string.format("  isComplete = %s,", tostring(isComplete)))
+                table.insert(questData, string.format("  frequency = %d,", frequency or 0))
+                
+                -- Check if quest exists in database
+                local dbQuest = QuestieDB.QueryQuestSingle(questId, "name")
+                if not dbQuest then
+                    table.insert(missingQuests, questId)
+                    table.insert(questData, "  STATUS = \"MISSING FROM DATABASE\",")
+                else
+                    table.insert(questData, "  STATUS = \"EXISTS IN DATABASE\",")
+                end
+                
+                -- Get objectives
+                SelectQuestLogEntry(i)
+                local numObjectives = GetNumQuestLeaderBoards(i)
+                if numObjectives > 0 then
+                    table.insert(questData, "  objectives = {")
+                    for j = 1, numObjectives do
+                        local text, objType, finished = GetQuestLogLeaderBoard(j, i)
+                        if text then
+                            table.insert(questData, string.format("    {text=\"%s\", type=\"%s\", done=%s},", 
+                                text:gsub("\"", "\\\""), objType or "unknown", tostring(finished)))
+                        end
+                    end
+                    table.insert(questData, "  },")
+                end
+                
+                table.insert(questData, "},")
+                table.insert(questData, "")
+            end
+        end
+        
+        table.insert(dumpData, "Quest Count: " .. questCount)
+        table.insert(dumpData, "Missing from DB: " .. #missingQuests)
+        if #missingQuests > 0 then
+            table.insert(dumpData, "Missing Quest IDs: " .. table.concat(missingQuests, ", "))
+        end
+        table.insert(dumpData, "")
+        table.insert(dumpData, "DETAILED QUEST DATA:")
+        table.insert(dumpData, "")
+        
+        -- Add the detailed quest data
+        for _, line in ipairs(questData) do
+            table.insert(dumpData, line)
+        end
+        
+        table.insert(dumpData, "")
+        table.insert(dumpData, "=== END OF DUMP ===")
+        table.insert(dumpData, "")
+        table.insert(dumpData, "INSTRUCTIONS:")
+        table.insert(dumpData, "1. Click 'Select All' button below")
+        table.insert(dumpData, "2. Press Ctrl+C to copy")
+        table.insert(dumpData, "3. Post this data on GitHub issue #1")
+        table.insert(dumpData, "4. We'll add your missing quests and release an update!")
+        
+        local outputText = table.concat(dumpData, "\n")
+        
+        -- Create or reuse the debug frame
+        if not QuestieDebugFrame then
+            local f = CreateFrame("Frame", "QuestieDebugFrame", UIParent)
+            f:SetFrameStrata("DIALOG")
+            f:SetWidth(700)
+            f:SetHeight(500)
+            f:SetPoint("CENTER")
+            f:SetMovable(true)
+            f:EnableMouse(true)
+            f:RegisterForDrag("LeftButton")
+            f:SetScript("OnDragStart", f.StartMoving)
+            f:SetScript("OnDragStop", f.StopMovingOrSizing)
+            
+            f:SetBackdrop({
+                bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
+                edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
+                tile = true, tileSize = 32, edgeSize = 32,
+                insets = { left = 11, right = 12, top = 12, bottom = 11 }
+            })
+            
+            local title = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+            title:SetPoint("TOP", 0, -20)
+            title:SetText("|cFF00FF00Questie Quest Log Export|r")
+            
+            local instructions = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+            instructions:SetPoint("TOP", title, "BOTTOM", 0, -8)
+            instructions:SetText("|cFFFFFFFFYour quest log has been exported. Copy and share with developers.|r")
+            
+            local scrollFrame = CreateFrame("ScrollFrame", "QuestieDebugScrollFrame", f, "UIPanelScrollFrameTemplate")
+            scrollFrame:SetPoint("TOPLEFT", 20, -60)
+            scrollFrame:SetPoint("BOTTOMRIGHT", -40, 60)
+            
+            local editBox = CreateFrame("EditBox", "QuestieDebugEditBox", scrollFrame)
+            editBox:SetMultiLine(true)
+            editBox:SetMaxLetters(99999)
+            editBox:SetSize(640, 2000)
+            editBox:SetFont("Interface\\AddOns\\Questie\\Fonts\\VeraMono.ttf", 10)
+            editBox:SetAutoFocus(false)
+            editBox:SetScript("OnEscapePressed", function() f:Hide() end)
+            
+            scrollFrame:SetScrollChild(editBox)
+            f.editBox = editBox
+            
+            local selectButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+            selectButton:SetPoint("BOTTOMLEFT", 40, 20)
+            selectButton:SetWidth(120)
+            selectButton:SetHeight(25)
+            selectButton:SetText("Select All")
+            selectButton:SetScript("OnClick", function()
+                editBox:SetFocus()
+                editBox:HighlightText()
+                DEFAULT_CHAT_FRAME:AddMessage("|cFF00FF00Text selected! Press Ctrl+C to copy.|r", 0, 1, 0)
+            end)
+            
+            local closeButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+            closeButton:SetPoint("BOTTOMRIGHT", -40, 20)
+            closeButton:SetWidth(100)
+            closeButton:SetHeight(25)
+            closeButton:SetText("Close")
+            closeButton:SetScript("OnClick", function() f:Hide() end)
+        end
+        
+        QuestieDebugFrame.editBox:SetText(outputText)
+        QuestieDebugFrame.editBox:HighlightText(0, 0)
+        QuestieDebugFrame:Show()
+        
+        Questie:Print("|cFF00FF00Quest log exported! Copy the data and share on GitHub.|r")
+        return
+    end
+    
     if mainCommand == "tracker" then
         if subCommand == "show" then
             QuestieTracker:Enable()
