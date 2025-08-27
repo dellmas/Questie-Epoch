@@ -152,6 +152,9 @@ function QuestieSlash.HandleCommands(input)
                     table.insert(debugOutput, "  WARNING: Frame appears OFF-SCREEN!")
                     table.insert(debugOutput, "  Try: /questie tracker reset")
                 end
+                
+                -- Check alwaysShowTracker setting
+                table.insert(debugOutput, "  AlwaysShowTracker: " .. tostring(Questie.db.profile.alwaysShowTracker or false))
             else
                 table.insert(debugOutput, "  ERROR: Base frame does NOT exist!")
             end
@@ -181,6 +184,21 @@ function QuestieSlash.HandleCommands(input)
                 table.insert(debugOutput, "  All quests loaded successfully")
             end
             table.insert(debugOutput, "")
+            
+            -- Check if tracker is hidden due to no quests
+            if questCount == 0 and not Questie.db.profile.alwaysShowTracker then
+                table.insert(debugOutput, "ISSUE FOUND: Tracker hidden because quest log is empty!")
+                table.insert(debugOutput, "  Solution 1: Accept a quest to see the tracker")
+                table.insert(debugOutput, "  Solution 2: Enable 'Always Show Tracker' in options")
+                table.insert(debugOutput, "")
+                table.insert(debugOutput, "ACTION: Temporarily enabling 'Always Show Tracker'...")
+                Questie.db.profile.alwaysShowTracker = true
+                
+                -- Force update the tracker
+                if QuestieTracker.started then
+                    QuestieTracker:Update()
+                end
+            end
             
             -- Try to reinitialize if needed
             if not QuestieTracker.started then
