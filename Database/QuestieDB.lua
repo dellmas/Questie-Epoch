@@ -1105,7 +1105,44 @@ function QuestieDB.GetQuest(questId) -- /dump QuestieDB.GetQuest(867)
 
     if (not rawdata) then
         Questie:Debug(Questie.DEBUG_CRITICAL, "[QuestieDB.GetQuest] rawdata is nil for questID:", questId)
-        return nil
+        
+        -- Create runtime stub for missing Epoch quests (26000-26999 range)
+        if questId >= 26000 and questId < 27000 then
+            -- Get quest name from game API (GetQuestLogIndexByID doesn't exist in 3.3.5a)
+            local questTitle = nil
+            -- Try to get from active quest log
+            for i = 1, GetNumQuestLogEntries() do
+                local title, level, _, _, _, _, _, id = GetQuestLogTitle(i)
+                if id == questId then
+                    questTitle = title
+                    break
+                end
+            end
+            
+            -- Create minimal stub data for the tracker
+            rawdata = {
+                "[Epoch] " .. (questTitle or ("Quest " .. questId)), -- name
+                nil, -- startedBy  
+                nil, -- finishedBy
+                1,   -- minLevel (default)
+                60,  -- questLevel (default max)
+                0,   -- requiredRaces (all)
+                0,   -- requiredClasses (all)
+                nil, -- objectivesText
+                nil, -- triggerEnd
+                nil, -- objectives
+                nil, -- sourceItemId
+                nil, -- preQuestGroup
+                nil, -- preQuestSingle
+                nil, -- childQuests
+                nil, -- inGroupWith
+                nil, -- exclusiveTo
+                0,   -- zoneOrSort (unknown zone)
+            }
+            Questie:Debug(Questie.DEBUG_DEVELOP, "[QuestieDB.GetQuest] Created runtime stub for Epoch quest:", questId)
+        else
+            return nil
+        end
     end
 
     ---@class Quest
