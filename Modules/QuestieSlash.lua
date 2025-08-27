@@ -120,10 +120,30 @@ function QuestieSlash.HandleCommands(input)
         local questData = {}
         
         for i = 1, GetNumQuestLogEntries() do
-            local title, level, tag, isHeader, isCollapsed, isComplete, frequency, questId = GetQuestLogTitle(i)
+            -- In WoW 3.3.5, GetQuestLogTitle returns different values
+            local title, level, tag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questId = GetQuestLogTitle(i)
             
-            if not isHeader and questId and questId > 0 then
+            -- Process all non-header entries
+            if not isHeader and title then
                 questCount = questCount + 1
+                
+                -- Quest ID might be nil in 3.3.5, try to extract it
+                if not questId or questId == 0 then
+                    -- Method 1: Try GetQuestLink which contains the quest ID
+                    local questLink = GetQuestLink(i)
+                    if questLink then
+                        -- Extract quest ID from link format: |Hquest:questId:level|h[name]|h
+                        local extractedId = questLink:match("quest:(%d+):")
+                        if extractedId then
+                            questId = tonumber(extractedId)
+                        end
+                    end
+                    
+                    -- If still no ID, mark as unknown
+                    if not questId or questId == 0 then
+                        questId = 0  -- We'll use 0 for unknown IDs
+                    end
+                end
                 
                 -- Capture all quest details
                 local questInfo = string.format("[%d] = { -- %s (Level %d)", 
@@ -136,15 +156,26 @@ function QuestieSlash.HandleCommands(input)
                 table.insert(questData, string.format("  level = %d,", level or 0))
                 table.insert(questData, string.format("  tag = \"%s\",", tag or ""))
                 table.insert(questData, string.format("  isComplete = %s,", tostring(isComplete)))
-                table.insert(questData, string.format("  frequency = %d,", frequency or 0))
+                table.insert(questData, string.format("  isDaily = %s,", tostring(isDaily)))
+                table.insert(questData, string.format("  suggestedGroup = %d,", suggestedGroup or 0))
+                
+                -- Add quest link for debugging
+                local questLink = GetQuestLink(i)
+                if questLink then
+                    table.insert(questData, string.format("  questLink = \"%s\",", questLink:gsub("|", "||")))
+                end
                 
                 -- Check if quest exists in database
-                local dbQuest = QuestieDB.QueryQuestSingle(questId, "name")
-                if not dbQuest then
-                    table.insert(missingQuests, questId)
-                    table.insert(questData, "  STATUS = \"MISSING FROM DATABASE\",")
+                if questId > 0 then
+                    local dbQuest = QuestieDB.QueryQuestSingle(questId, "name")
+                    if not dbQuest then
+                        table.insert(missingQuests, questId)
+                        table.insert(questData, "  STATUS = \"MISSING FROM DATABASE\",")
+                    else
+                        table.insert(questData, "  STATUS = \"EXISTS IN DATABASE\",")
+                    end
                 else
-                    table.insert(questData, "  STATUS = \"EXISTS IN DATABASE\",")
+                    table.insert(questData, "  STATUS = \"UNKNOWN QUEST ID - NEEDS IDENTIFICATION\",")
                 end
                 
                 -- Get objectives
@@ -446,24 +477,43 @@ function QuestieSlash.HandleCommands(input)
                 step2:SetPoint("TOP", step1, "BOTTOM", 0, -4)
                 step2:SetText("|cFFFFFFFFStep 2:|r Copy (Ctrl+C) and paste into GitHub issue #1")
                 
-                -- Scroll frame
+                -- Scroll frame with background
+                local scrollBg = CreateFrame("Frame", nil, f)
+                scrollBg:SetPoint("TOPLEFT", 18, -78)
+                scrollBg:SetPoint("BOTTOMRIGHT", -38, 58)
+                scrollBg:SetBackdrop({
+                    bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background-Dark",
+                    edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
+                    tile = true, tileSize = 32, edgeSize = 8,
+                    insets = {left = 2, right = 2, top = 2, bottom = 2}
+                })
+                
                 local scrollFrame = CreateFrame("ScrollFrame", "QuestieDebugScrollFrame", f, "UIPanelScrollFrameTemplate")
                 scrollFrame:SetPoint("TOPLEFT", 20, -80)
                 scrollFrame:SetPoint("BOTTOMRIGHT", -40, 60)
                 
-                -- Edit box
+                -- Edit box with forced visibility
                 local editBox = CreateFrame("EditBox", "QuestieDebugEditBox", scrollFrame)
                 editBox:SetMultiLine(true)
                 editBox:SetMaxLetters(99999)
                 editBox:SetSize(540, 800)
-                editBox:SetFont("Interface\\AddOns\\Questie\\Fonts\\VeraMono.ttf", 10)
+                -- Try ChatFontNormal which should always be visible
+                editBox:SetFontObject(ChatFontNormal)
+                editBox:SetTextColor(1, 1, 1, 1)  -- White text
+                editBox:SetTextInsets(2, 2, 2, 2)  -- Add some padding
                 editBox:SetAutoFocus(false)
+                editBox:EnableMouse(true)
                 editBox:SetScript("OnEscapePressed", function() f:Hide() end)
                 editBox:SetScript("OnTextChanged", function(self, userInput)
                     if userInput then
                         self:SetText(outputText)
                         self:HighlightText()
                     end
+                end)
+                
+                -- Add OnShow handler to ensure text is visible
+                editBox:SetScript("OnShow", function(self)
+                    self:SetTextColor(1, 1, 1, 1)
                 end)
                 
                 scrollFrame:SetScrollChild(editBox)
@@ -495,7 +545,10 @@ function QuestieSlash.HandleCommands(input)
                 closeButton:SetScript("OnClick", function() f:Hide() end)
             end
             
+            -- Set text and ensure it's visible
             QuestieDebugFrame.editBox:SetText(outputText)
+            QuestieDebugFrame.editBox:SetTextColor(1, 1, 1, 1)  -- Ensure white text
+            QuestieDebugFrame.editBox:SetCursorPosition(0)
             QuestieDebugFrame.editBox:HighlightText(0, 0)
             QuestieDebugFrame:Show()
             
