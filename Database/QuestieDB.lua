@@ -1097,6 +1097,24 @@ function QuestieDB.GetQuest(questId) -- /dump QuestieDB.GetQuest(867)
         Questie:Debug(Questie.DEBUG_CRITICAL, "[QuestieDB.GetQuest] No questId.")
         return nil
     end
+    
+    -- Handle case where questId might be passed as a table
+    if type(questId) == "table" then
+        if questId.Id then
+            questId = questId.Id
+        else
+            Questie:Debug(Questie.DEBUG_CRITICAL, "[QuestieDB.GetQuest] questId is a table without Id field.")
+            return nil
+        end
+    end
+    
+    -- Ensure questId is a number
+    questId = tonumber(questId)
+    if not questId then
+        Questie:Debug(Questie.DEBUG_CRITICAL, "[QuestieDB.GetQuest] questId could not be converted to number.")
+        return nil
+    end
+    
     if _QuestieDB.questCache[questId] then
         return _QuestieDB.questCache[questId];
     end
