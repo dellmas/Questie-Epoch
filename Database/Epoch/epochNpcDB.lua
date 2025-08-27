@@ -648,8 +648,8 @@ local epochNpcData = {
 [45877] = {"Innkeeper Finmir",1200,1350,30,30,0,{[8]={{25.44,31.07}}},nil,8,{9610},{9610},11,"A",nil,128},
 [45878] = {"Manaar the Watcher",1680,1890,42,42,0,{[8]={{26.18,38.91}}},nil,8,{9609},{26923},11,"A",nil,0},
 [45885] = {"Moruul",1680,1890,42,42,0,{[8]={{25.1,35.21}}},nil,8,{26921},{26921},11,"A",nil,0},
-[45886] = {"Jasper Greene",nil,nil,8,8,0,{[85]={{38.9,52.6}}},nil,85,{26925},{26936},nil,nil,nil,0},
-[45887] = {"Historian Todd Page",nil,nil,8,8,0,{[85]={{60.6,51.1}}},nil,85,nil,{26925},nil,nil,nil,0},
+[45886] = {"Jasper Greene",nil,nil,8,8,0,{[85]={{38.9,52.6}}},nil,85,{26925},nil,nil,nil,nil,0},
+[45887] = {"Historian Todd Page",nil,nil,9,9,0,{[85]={{60.6,51.0}}},nil,85,{26926},{26925},nil,nil,nil,0},
 [45888] = {"Lost Ancient",1920,2160,48,48,0,{[357]={{55.84,73.56}}},nil,357,nil,nil,nil,nil,nil,0},
 [45898] = {"Luna Strinbrow",nil,nil,5,5,0,{[85]={{30.8,65.3}}},nil,85,{26939},{26939},nil,nil,nil,0},
 [45899] = {"Fergus Kitsapell",nil,nil,10,10,0,{[85]={{60.3,53.1}}},nil,85,{26940},{26940},nil,nil,nil,0},
@@ -779,6 +779,7 @@ local epochNpcData = {
 [46896] = {"Golemancer Lugar",2240,2520,56,56,0,{[46]={{67.9,28.8}}},nil,46,nil,nil,nil,nil,nil,0},
 [46903] = {"Jason Tinling",2400,2700,60,60,0,{[46]={{68.6,49.9}}},nil,46,{26654,26655,26656},{26654,26655,26656},35,"AH",nil,0},
 [46904] = {"Everstill Lurker",2120,2385,53,53,0,{[44]={{57.4,56.5}}},nil,44,nil,nil,nil,nil,nil,0},
+[1521] = {"Gretchen Dedmar",nil,nil,9,9,0,{[85]={{61.8,52.6}}},nil,85,nil,{26936},nil,nil,nil,0},
 }
 
 -- Stage the Epoch npcData for later merge during compilation

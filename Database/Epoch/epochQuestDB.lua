@@ -247,10 +247,10 @@ local epochQuestData = {
 [26929] = {"[Epoch] Quest 26929",{{45139}},{{45139}},nil,11,nil,nil,nil,nil,{nil,nil,{{60164,nil},{60165,nil}}},nil,nil,{26928},{26930},nil,nil,130,nil,nil,nil,nil,26930,8,0,26928,nil,nil,nil,nil,nil},
 [26930] = {"[Epoch] Quest 26930",{{45139}},{{45141}},nil,11,nil,nil,nil,nil,nil,nil,nil,{26929},{26931},nil,nil,130,nil,nil,nil,nil,26931,nil,0,26929,nil,nil,nil,nil,nil},
 [26931] = {"[Epoch] Quest 26931",{{45141}},{{45140}},nil,11,nil,nil,nil,nil,nil,nil,nil,{26930},nil,nil,nil,130,nil,nil,nil,nil,nil,nil,0,26930,nil,nil,nil,nil,nil},
-[26926] = {"A Box of Relics",{},{},nil,9,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil},
+[26926] = {"A Box of Relics",{{45887}},nil,nil,9,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil},
 [26932] = {"Encroaching Worgs",{{1738}},{{1738}},nil,8,nil,nil,nil,nil,{{{45205,nil,5}}},nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,8,0,nil,nil,nil,nil,nil,nil},
 [26934] = {"Filling the Armory",{{2136}},{{2136}},nil,9,nil,nil,nil,nil,{nil,nil,{{62803,nil,6}}},nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,8,0,nil,nil,nil,nil,nil,nil},
-[26936] = {"Northshore Mine",{{45887}},{{45886}},nil,9,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil},
+[26936] = {"Northshore Mine",nil,{{1521}},nil,9,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil},
 [26939] = {"Peace in Death",{{45898}},{{45898}},nil,5,nil,nil,nil,nil,{nil,{{4000009,nil}},{{62811,nil}}},62811,nil,{376},nil,nil,nil,85,nil,nil,nil,{62808,62809,62810},nil,nil,0,nil,nil,nil,nil,nil,nil},
 [26940] = {"Reclaim the Mine",{{45899}},{{45899}},nil,10,nil,nil,nil,nil,{{{45103,nil,10},{45104,nil,3}}},nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,8,0,nil,nil,nil,nil,nil,nil},
 [26942] = {"Stillwater Eels",{{45902}},{{45902}},nil,6,nil,nil,nil,nil,{nil,nil,{{60102,nil,10}}},nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,8,0,nil,nil,nil,nil,nil,nil},
@@ -611,6 +611,17 @@ local epochQuestData = {
 [63489] = {"[Epoch] Quest 63489",nil,nil,nil,nil,nil,nil,{"Hidden interaction 4001049"},{"Hidden interaction 4001049",{[46]={{17.3,29.6}}}},nil,nil,nil,nil,nil,nil,nil,46,nil,nil,nil,nil,nil,8,1,nil,nil,{{{[46]={{17.3,29.6}}},134400,"Hidden interaction 4001049",1,{{"object",4001049}}}},nil,nil,nil},
 [63491] = {"[Epoch] Quest 63491",nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,{9691,9695,9698},nil,nil,1,nil,nil,nil,nil,nil,nil},
 }
+
+-- Add missing quest stubs to allow tracker to function
+epochQuestData[11143] = {"[Epoch] Quest 11143",nil,nil,nil,1,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
+epochQuestData[11160] = {"[Epoch] Quest 11160",nil,nil,nil,1,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
+epochQuestData[11161] = {"[Epoch] Quest 11161",nil,nil,nil,1,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
+epochQuestData[1288] = {"[Epoch] Quest 1288",nil,nil,nil,1,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
+epochQuestData[26499] = {"[Epoch] Magical Materiel",nil,nil,nil,35,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
+epochQuestData[26506] = {"[Epoch] The Strahnbrad Courier",nil,nil,nil,35,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
+epochQuestData[26538] = {"[Epoch] The Barony Mordis",nil,nil,nil,35,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
+epochQuestData[26543] = {"[Epoch] Watermelon Punch",nil,nil,nil,35,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
+epochQuestData[27503] = {"[Epoch] Quest 27503",nil,nil,nil,1,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
 
 -- Stage the Epoch questData for later merge during compilation
 QuestieDB._epochQuestData = epochQuestData

@@ -119,7 +119,7 @@ function QuestieDataCollector:CheckExistingQuests()
                 else
                     -- Use pcall to catch any errors from GetQuest
                     local success, questData = pcall(function()
-                        return QuestieDB:GetQuest(questID)
+                        return QuestieDB.GetQuest(questID)  -- Use dot notation, not colon
                     end)
                     
                     if not success then
@@ -649,7 +649,7 @@ function QuestieDataCollector:OnQuestAccepted(questId)
     end
     
     -- Only track Epoch quests (26000-26999) or quests with [Epoch] prefix
-    local questData = QuestieDB:GetQuest(questId)
+    local questData = QuestieDB.GetQuest(questId)  -- Use dot notation, not colon
     local isEpochQuest = (questId >= 26000 and questId < 27000)
     local hasEpochPrefix = questData and questData.name and string.find(questData.name, "%[Epoch%]")
     local isMissingFromDB = not questData

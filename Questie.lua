@@ -136,6 +136,11 @@ Questie.DEBUG_SPAM = 2 ^ 4
 function Questie:Debug(msgDebugLevel, ...)
     if (Questie.db.profile.debugEnabled) then
         local optionsDebugLevel = Questie.db.profile.debugLevel
+        
+        -- Safety check for nil values
+        if not optionsDebugLevel or not msgDebugLevel then
+            return
+        end
 
         if (band(optionsDebugLevel, msgDebugLevel) == 0) or (not Questie.db.profile.debugEnabledPrint) then
             return

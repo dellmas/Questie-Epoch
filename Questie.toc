@@ -98,6 +98,7 @@ Modules\Libs\RamerDouglasPeucker.lua
 # Modules
 Modules\QuestieValidateGameCache.lua
 Modules\QuestieInit.lua
+Modules\EpochDatabaseValidator.lua
 Modules\MinimapIcon.lua
 Modules\QuestieProfessions.lua
 Modules\QuestieReputation.lua

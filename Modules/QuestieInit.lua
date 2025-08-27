@@ -411,6 +411,16 @@ function QuestieInit:LoadBaseDB()
     QuestieInit:LoadDatabase("objectData")
     QuestieInit:LoadDatabase("questData")
     QuestieInit:LoadDatabase("itemData")
+    
+    -- Validate Epoch data before merging (if validator is available)
+    local EpochDatabaseValidator = QuestieLoader:ImportModule("EpochDatabaseValidator")
+    if EpochDatabaseValidator and Questie.db.global.epochValidationEnabled ~= false then
+        local validationPassed = EpochDatabaseValidator:ValidateEpochData()
+        if not validationPassed then
+            Questie:Print("|cFFFF0000[Epoch] Database validation failed! Check /epochvalidate for details.|r")
+        end
+    end
+    
     -- After base DB tables are loaded (converted from strings), merge Epoch supplemental data if present
     if QuestieDB._epochQuestData and type(QuestieDB.questData) == "table" then
         local added, skipped = 0, 0

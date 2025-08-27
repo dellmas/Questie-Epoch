@@ -1103,14 +1103,23 @@ function QuestieDB.GetQuest(questId) -- /dump QuestieDB.GetQuest(867)
         if questId.Id then
             questId = questId.Id
         else
-            Questie:Debug(Questie.DEBUG_CRITICAL, "[QuestieDB.GetQuest] questId is a table without Id field. Stack trace:")
-            -- Get a simple stack trace to find the caller
-            local trace = debugstack(2, 1, 0)
-            local file = trace:match("([^\\/:]+%.lua)")
-            local line = trace:match(":(%d+):")
-            if file and line then
-                Questie:Debug(Questie.DEBUG_CRITICAL, "  Called from: " .. file .. ":" .. line)
+            -- Show what's in the table for debugging
+            local tableInfo = "Table contents: "
+            local count = 0
+            for k, v in pairs(questId) do
+                if count < 5 then  -- Limit output
+                    tableInfo = tableInfo .. tostring(k) .. "=" .. tostring(v) .. ", "
+                    count = count + 1
+                end
             end
+            -- This looks like QuestieDB itself is being passed!
+            if questId == QuestieDB then
+                Questie:Print("|cFFFF0000[ERROR] QuestieDB itself was passed as questId!|r")
+            end
+            Questie:Debug(Questie.DEBUG_CRITICAL, "[QuestieDB.GetQuest] questId is a table without Id field. " .. tableInfo)
+            -- Get a more detailed stack trace
+            local trace = debugstack(2, 3, 0)
+            Questie:Print("|cFFFFFF00Stack trace:|r " .. (trace:sub(1, 200) or "unknown"))
             return nil
         end
     end
@@ -1131,8 +1140,18 @@ function QuestieDB.GetQuest(questId) -- /dump QuestieDB.GetQuest(867)
     if (not rawdata) then
         Questie:Debug(Questie.DEBUG_CRITICAL, "[QuestieDB.GetQuest] rawdata is nil for questID:", questId)
         
-        -- Create runtime stub for missing Epoch quests (26000-26999 range)
-        if questId >= 26000 and questId < 27000 then
+        -- Create runtime stub for missing Epoch quests
+        -- Include: Any quest >= 26000 (Epoch range), or any quest currently in the quest log
+        local isInQuestLog = false
+        for i = 1, GetNumQuestLogEntries() do
+            local _, _, _, _, _, _, _, id = GetQuestLogTitle(i)
+            if id == questId then
+                isInQuestLog = true
+                break
+            end
+        end
+        
+        if questId >= 26000 or isInQuestLog then
             -- Get quest name from game API (GetQuestLogIndexByID doesn't exist in 3.3.5a)
             local questTitle = nil
             -- Try to get from active quest log
@@ -1145,8 +1164,10 @@ function QuestieDB.GetQuest(questId) -- /dump QuestieDB.GetQuest(867)
             end
             
             -- Create minimal stub data for the tracker
+            -- Use different prefix based on quest ID range
+            local prefix = questId >= 26000 and "[Epoch] " or "[Missing] "
             rawdata = {
-                "[Epoch] " .. (questTitle or ("Quest " .. questId)), -- name
+                prefix .. (questTitle or ("Quest " .. questId)), -- name
                 {}, -- startedBy (empty table instead of nil)
                 {}, -- finishedBy (empty table instead of nil)
                 1,   -- minLevel (default)
