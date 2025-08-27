@@ -111,6 +111,15 @@ function QuestieSlash.HandleCommands(input)
         elseif subCommand == "debug" then
             -- Debug command to diagnose tracker issues
             Questie:Print("|cFF00FF00=== Questie Tracker Debug Info ===|r")
+            
+            -- Enable debug mode temporarily for this session
+            local oldDebugEnabled = Questie.db.profile.debugEnabled
+            local oldDebugLevel = Questie.db.profile.debugLevel
+            Questie.db.profile.debugEnabled = true
+            Questie.db.profile.debugEnabledPrint = true
+            Questie.db.profile.debugLevel = 7 -- Enable all debug levels (CRITICAL=1, ELEVATED=2, INFO=4)
+            Questie:Print("|cFFFFFF00Debug mode temporarily enabled for this session|r")
+            
             Questie:Print("Tracker started: " .. tostring(QuestieTracker.started or false))
             Questie:Print("Tracker enabled in profile: " .. tostring(Questie.db and Questie.db.profile and Questie.db.profile.trackerEnabled or false))
             
@@ -150,7 +159,25 @@ function QuestieSlash.HandleCommands(input)
                 QuestieTracker.Initialize()
             else
                 Questie:Print("Tracker is already initialized")
+                Questie:Print("Forcing tracker update...")
+                QuestieTracker:Update()
+                Questie:Print("Tracker update complete")
             end
+            
+            -- Check for quest issues
+            Questie:Print("|cFF00FF00=== Checking Quest Log ===|r")
+            local questCount = 0
+            for i = 1, GetNumQuestLogEntries() do
+                local title, level, _, _, _, _, _, questId = GetQuestLogTitle(i)
+                if questId and questId > 0 then
+                    questCount = questCount + 1
+                    local questData = QuestieDB.GetQuest(questId)
+                    if not questData then
+                        Questie:Print(string.format("|cFFFF0000Quest %d '%s' FAILED to load data!|r", questId, title or "Unknown"))
+                    end
+                end
+            end
+            Questie:Print(string.format("Total quests in log: %d", questCount))
         else
             QuestieTracker:Toggle()
         end
