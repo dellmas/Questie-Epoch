@@ -431,36 +431,42 @@ function TrackerUtils:UnFocus()
         return
     end
     for questId in pairs(QuestiePlayer.currentQuestlog) do
-        local quest = QuestieDB.GetQuest(questId)
+        -- Ensure questId is actually a number (the key), not a table
+        if type(questId) ~= "number" then
+            Questie:Debug(Questie.DEBUG_CRITICAL, "[TrackerUtils:UnFocus] Invalid questId type in currentQuestlog:", type(questId))
+            -- Skip this entry
+        else
+            local quest = QuestieDB.GetQuest(questId)
 
-        if quest then
-            quest.FadeIcons = nil
-            if next(quest.Objectives) then
-                if Questie.db.char.TrackerHiddenQuests[quest.Id] then
-                    quest.HideIcons = true
-                    quest.FadeIcons = nil
-                else
-                    quest.HideIcons = nil
-                    quest.FadeIcons = nil
-                end
-
-                for _, objective in pairs(quest.Objectives) do
-                    if Questie.db.char.TrackerHiddenObjectives[tostring(questId) .. " " .. tostring(objective.Index)] then
-                        objective.HideIcons = true
-                        objective.FadeIcons = nil
+            if quest then
+                quest.FadeIcons = nil
+                if next(quest.Objectives) then
+                    if Questie.db.char.TrackerHiddenQuests[quest.Id] then
+                        quest.HideIcons = true
+                        quest.FadeIcons = nil
                     else
-                        objective.HideIcons = nil
-                        objective.FadeIcons = nil
+                        quest.HideIcons = nil
+                        quest.FadeIcons = nil
                     end
-                end
 
-                for _, objective in pairs(quest.SpecialObjectives) do
-                    if Questie.db.char.TrackerHiddenObjectives[tostring(questId) .. " " .. tostring(objective.Index)] then
-                        objective.HideIcons = true
-                        objective.FadeIcons = nil
-                    else
-                        objective.HideIcons = nil
-                        objective.FadeIcons = nil
+                    for _, objective in pairs(quest.Objectives) do
+                        if Questie.db.char.TrackerHiddenObjectives[tostring(questId) .. " " .. tostring(objective.Index)] then
+                            objective.HideIcons = true
+                            objective.FadeIcons = nil
+                        else
+                            objective.HideIcons = nil
+                            objective.FadeIcons = nil
+                        end
+                    end
+
+                    for _, objective in pairs(quest.SpecialObjectives) do
+                        if Questie.db.char.TrackerHiddenObjectives[tostring(questId) .. " " .. tostring(objective.Index)] then
+                            objective.HideIcons = true
+                            objective.FadeIcons = nil
+                        else
+                            objective.HideIcons = nil
+                            objective.FadeIcons = nil
+                        end
                     end
                 end
             end
@@ -479,31 +485,35 @@ function TrackerUtils:FocusObjective(questId, objectiveIndex)
 
     Questie.db.char.TrackerFocus = tostring(questId) .. " " .. tostring(objectiveIndex)
     for questLogQuestId in pairs(QuestiePlayer.currentQuestlog) do
-        local quest = QuestieDB.GetQuest(questLogQuestId)
-        if quest and next(quest.Objectives) then
-            if questLogQuestId == questId then
-                quest.HideIcons = nil
-                quest.FadeIcons = nil
+        if type(questLogQuestId) ~= "number" then
+            Questie:Debug(Questie.DEBUG_CRITICAL, "[TrackerUtils:FocusObjective] Invalid questId type in currentQuestlog:", type(questLogQuestId))
+        else
+            local quest = QuestieDB.GetQuest(questLogQuestId)
+            if quest and next(quest.Objectives) then
+                if questLogQuestId == questId then
+                    quest.HideIcons = nil
+                    quest.FadeIcons = nil
 
-                for _, objective in pairs(quest.Objectives) do
-                    if objective.Index == objectiveIndex then
-                        objective.HideIcons = nil
-                        objective.FadeIcons = nil
-                    else
-                        objective.FadeIcons = true
+                    for _, objective in pairs(quest.Objectives) do
+                        if objective.Index == objectiveIndex then
+                            objective.HideIcons = nil
+                            objective.FadeIcons = nil
+                        else
+                            objective.FadeIcons = true
+                        end
                     end
-                end
 
-                for _, objective in pairs(quest.SpecialObjectives) do
-                    if objective.Index == objectiveIndex then
-                        objective.HideIcons = nil
-                        objective.FadeIcons = nil
-                    else
-                        objective.FadeIcons = true
+                    for _, objective in pairs(quest.SpecialObjectives) do
+                        if objective.Index == objectiveIndex then
+                            objective.HideIcons = nil
+                            objective.FadeIcons = nil
+                        else
+                            objective.FadeIcons = true
+                        end
                     end
+                else
+                    quest.FadeIcons = true
                 end
-            else
-                quest.FadeIcons = true
             end
         end
     end
@@ -517,13 +527,17 @@ function TrackerUtils:FocusQuest(questId)
 
     Questie.db.char.TrackerFocus = questId
     for questLogQuestId in pairs(QuestiePlayer.currentQuestlog) do
-        local quest = QuestieDB.GetQuest(questLogQuestId)
-        if quest then
-            if questLogQuestId == questId then
-                quest.HideIcons = nil
-                quest.FadeIcons = nil
-            else
-                quest.FadeIcons = true
+        if type(questLogQuestId) ~= "number" then
+            Questie:Debug(Questie.DEBUG_CRITICAL, "[TrackerUtils:FocusQuest] Invalid questId type in currentQuestlog:", type(questLogQuestId))
+        else
+            local quest = QuestieDB.GetQuest(questLogQuestId)
+            if quest then
+                if questLogQuestId == questId then
+                    quest.HideIcons = nil
+                    quest.FadeIcons = nil
+                else
+                    quest.FadeIcons = true
+                end
             end
         end
     end

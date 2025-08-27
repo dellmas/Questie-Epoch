@@ -1,6 +1,6 @@
 # Questie for Epoch
 
-Fork optimized for Project Epoch (3.3.5a) with 600+ custom quests.
+Questie addon optimized for Project Epoch (3.3.5a) with 600+ custom quests.
 
 ## Features
 - Epoch quest database (IDs 26000-26999) - many still need validation
