@@ -956,6 +956,8 @@ function QuestieDBCompiler:CompileTableCoroutine(tbl, types, order, lookup, data
                     Questie.db.global[databaseKey.."Bin"] = stream:Save()
                     Questie.db.global[databaseKey.."Ptrs"] = QuestieDBCompiler:EncodePointerMap(stream, pointerMap)
                 end
+                -- Save version for corruption detection (v1.0.18)
+                Questie.db.global.dbCacheVersion = GetAddOnMetadata("Questie", "Version")
                 stream:finished() -- relief memory pressure
                 return
             end

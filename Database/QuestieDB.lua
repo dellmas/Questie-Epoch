@@ -243,6 +243,84 @@ function QuestieDB:Initialize()
         preferredIndex = 3
     }
 
+    -- Version 1.0.18: Add corruption detection for cached database
+    local function ValidateCachedDatabase()
+        -- Check version mismatch
+        local currentVersion = GetAddOnMetadata("Questie", "Version")
+        if Questie.db.global.dbCacheVersion and Questie.db.global.dbCacheVersion ~= currentVersion then
+            Questie:Print("|cFFFFFF00Database cache outdated (was " .. tostring(Questie.db.global.dbCacheVersion) .. ", now " .. currentVersion .. "), rebuilding...|r")
+            return false
+        end
+        
+        -- Sanity check the binary data
+        local function ValidateBinary(binData, binName)
+            if not binData then
+                return true  -- No cache yet, that's fine
+            end
+            
+            -- Check if it's a string
+            if type(binData) ~= "string" then
+                Questie:Print("|cFFFF0000Database cache corrupted (" .. binName .. " is not a string), rebuilding...|r")
+                return false
+            end
+            
+            -- Check size is reasonable (100 bytes to 10MB)
+            local size = string.len(binData)
+            if size < 100 or size > 10000000 then
+                Questie:Print("|cFFFF0000Database cache corrupted (" .. binName .. " size " .. size .. " bytes), rebuilding...|r")
+                return false
+            end
+            
+            -- Binary data should have null bytes
+            if not string.find(binData, "\000") then
+                Questie:Print("|cFFFF0000Database cache corrupted (" .. binName .. " invalid format), rebuilding...|r")
+                return false
+            end
+            
+            return true
+        end
+        
+        -- Validate each binary cache
+        if Questie.IsSoD then
+            if not ValidateBinary(Questie.db.global.sod.npcBin, "npcBin") then return false end
+            if not ValidateBinary(Questie.db.global.sod.questBin, "questBin") then return false end
+            if not ValidateBinary(Questie.db.global.sod.objBin, "objBin") then return false end
+            if not ValidateBinary(Questie.db.global.sod.itemBin, "itemBin") then return false end
+        else
+            if not ValidateBinary(Questie.db.global.npcBin, "npcBin") then return false end
+            if not ValidateBinary(Questie.db.global.questBin, "questBin") then return false end
+            if not ValidateBinary(Questie.db.global.objBin, "objBin") then return false end
+            if not ValidateBinary(Questie.db.global.itemBin, "itemBin") then return false end
+        end
+        
+        return true
+    end
+    
+    -- Clear cache if validation fails
+    if not ValidateCachedDatabase() then
+        Questie:Debug(Questie.DEBUG_CRITICAL, "[QuestieDB] Clearing corrupted database cache")
+        if Questie.IsSoD then
+            Questie.db.global.sod.npcBin = nil
+            Questie.db.global.sod.npcPtrs = nil
+            Questie.db.global.sod.questBin = nil
+            Questie.db.global.sod.questPtrs = nil
+            Questie.db.global.sod.objBin = nil
+            Questie.db.global.sod.objPtrs = nil
+            Questie.db.global.sod.itemBin = nil
+            Questie.db.global.sod.itemPtrs = nil
+        else
+            Questie.db.global.npcBin = nil
+            Questie.db.global.npcPtrs = nil
+            Questie.db.global.questBin = nil
+            Questie.db.global.questPtrs = nil
+            Questie.db.global.objBin = nil
+            Questie.db.global.objPtrs = nil
+            Questie.db.global.itemBin = nil
+            Questie.db.global.itemPtrs = nil
+        end
+        Questie.db.global.dbCacheVersion = nil
+    end
+    
     -- For now we store both, the SoD database and the Era/HC database
     local npcBin, npcPtrs, questBin, questPtrs, objBin, objPtrs, itemBin, itemPtrs
     if Questie.IsSoD then

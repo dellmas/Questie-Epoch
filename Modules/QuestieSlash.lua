@@ -165,14 +165,23 @@ function QuestieSlash.HandleCommands(input)
             local questCount = 0
             local failedQuests = {}
             local questLogQuests = {}
-            for i = 1, GetNumQuestLogEntries() do
-                local title, level, _, _, _, _, _, questId = GetQuestLogTitle(i)
-                if questId and questId > 0 then
-                    questCount = questCount + 1
-                    questLogQuests[questId] = title
-                    local success, questData = pcall(function() return QuestieDB.GetQuest(questId) end)
-                    if not success or not questData then
-                        table.insert(failedQuests, string.format("  FAILED: Quest %d '%s'", questId, title or "Unknown"))
+            local totalEntries = GetNumQuestLogEntries()
+            table.insert(debugOutput, "  GetNumQuestLogEntries: " .. totalEntries)
+            
+            for i = 1, totalEntries do
+                local title, level, _, isHeader, _, _, _, questId = GetQuestLogTitle(i)
+                if not isHeader then
+                    -- Some quests might not return a questId properly
+                    if questId and questId > 0 then
+                        questCount = questCount + 1
+                        questLogQuests[questId] = title or ("Unknown Quest " .. questId)
+                        local success, questData = pcall(function() return QuestieDB.GetQuest(questId) end)
+                        if not success or not questData then
+                            table.insert(failedQuests, string.format("  FAILED: Quest %d '%s' (Level %d)", questId, title or "Unknown", level or 0))
+                        end
+                    elseif title then
+                        -- Quest has a title but no ID - this is the problem!
+                        table.insert(debugOutput, string.format("  WARNING: Quest '%s' has no ID!", title))
                     end
                 end
             end
