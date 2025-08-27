@@ -1580,8 +1580,19 @@ function QuestieDataCollector:ShowExportWindow(questId)
         editBox:SetWidth(540)
         editBox:SetAutoFocus(false)
         editBox:EnableMouse(true)
-        editBox:SetScript("OnEditFocusGained", function(self) self:ClearFocus() end)  -- Make read-only
+        -- Don't clear focus immediately - allow selection and copying
+        editBox:SetScript("OnEditFocusGained", function(self) 
+            self:HighlightText()  -- Auto-select all text when focused
+        end)
         editBox:SetScript("OnEscapePressed", function() f:Hide() end)
+        -- Prevent editing while allowing selection
+        editBox:SetScript("OnTextChanged", function(self, userInput)
+            if userInput then
+                -- If user tries to type, restore original text
+                self:SetText(self.originalText or "")
+                self:HighlightText()
+            end
+        end)
         
         -- Set a large initial height for the edit box to enable scrolling
         editBox:SetHeight(2000)
@@ -1615,7 +1626,14 @@ function QuestieDataCollector:ShowExportWindow(questId)
         copyButton:SetScript("OnClick", function()
             editBox:SetFocus()
             editBox:HighlightText()
+            DEFAULT_CHAT_FRAME:AddMessage("|cFF00FF00Text selected! Now press Ctrl+C to copy.|r", 0, 1, 0)
         end)
+        
+        -- Help text about keybind conflicts
+        local helpText = f:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+        helpText:SetPoint("BOTTOM", copyButton, "TOP", 60, 5)
+        helpText:SetText("|cFFFFFF00Tip: If Ctrl+C doesn't work, unbind it in Key Bindings|r")
+        helpText:SetTextColor(1, 1, 0, 0.7)
         
         -- Close & Purge Data button
         local purgeButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
@@ -1689,6 +1707,7 @@ function QuestieDataCollector:ShowExportWindow(questId)
     
     -- Update and show frame
     QuestieDataCollectorExportFrame.editBox:SetText(exportText)
+    QuestieDataCollectorExportFrame.editBox.originalText = exportText  -- Store for OnTextChanged handler
     QuestieDataCollectorExportFrame.editBox:SetCursorPosition(0)  -- Start at top of text
     
     -- Reset scroll position to top
