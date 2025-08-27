@@ -1177,8 +1177,8 @@ function QuestieDB.GetQuest(questId) -- /dump QuestieDB.GetQuest(867)
                 local prefix = questId >= 26000 and "[Epoch] " or "[Missing] "
                 return {
                     prefix .. (questTitle or ("Quest " .. questId)), -- name
-                    {}, -- startedBy (empty table instead of nil)
-                    {}, -- finishedBy (empty table instead of nil)
+                    {{}, {}, {}}, -- startedBy (properly structured: {NPCs, GameObjects, Items})
+                    {{}, {}}, -- finishedBy (properly structured: {NPCs, GameObjects})
                     1,   -- minLevel (default)
                     60,  -- questLevel (default max)
                     0,   -- requiredRaces (all)

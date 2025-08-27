@@ -164,17 +164,49 @@ function QuestieSlash.HandleCommands(input)
             table.insert(debugOutput, "QUEST LOG CHECK:")
             local questCount = 0
             local failedQuests = {}
+            local questLogQuests = {}
             for i = 1, GetNumQuestLogEntries() do
                 local title, level, _, _, _, _, _, questId = GetQuestLogTitle(i)
                 if questId and questId > 0 then
                     questCount = questCount + 1
+                    questLogQuests[questId] = title
                     local success, questData = pcall(function() return QuestieDB.GetQuest(questId) end)
                     if not success or not questData then
                         table.insert(failedQuests, string.format("  FAILED: Quest %d '%s'", questId, title or "Unknown"))
                     end
                 end
             end
-            table.insert(debugOutput, "  Total quests: " .. questCount)
+            table.insert(debugOutput, "  Total quests in log: " .. questCount)
+            
+            -- Check QuestiePlayer.currentQuestlog
+            local QuestiePlayer = QuestieLoader:ImportModule("QuestiePlayer")
+            if QuestiePlayer and QuestiePlayer.currentQuestlog then
+                local trackedCount = 0
+                local missingFromTracker = {}
+                
+                for questId, quest in pairs(QuestiePlayer.currentQuestlog) do
+                    if type(quest) == "table" then
+                        trackedCount = trackedCount + 1
+                    end
+                end
+                
+                -- Find quests in log but not in tracker
+                for questId, title in pairs(questLogQuests) do
+                    if not QuestiePlayer.currentQuestlog[questId] then
+                        table.insert(missingFromTracker, string.format("  NOT TRACKED: Quest %d '%s'", questId, title))
+                    end
+                end
+                
+                table.insert(debugOutput, "  Quests in tracker: " .. trackedCount)
+                
+                if #missingFromTracker > 0 then
+                    table.insert(debugOutput, "  Missing from tracker:")
+                    for _, msg in ipairs(missingFromTracker) do
+                        table.insert(debugOutput, msg)
+                    end
+                end
+            end
+            
             if #failedQuests > 0 then
                 table.insert(debugOutput, "  Failed to load:")
                 for _, msg in ipairs(failedQuests) do
