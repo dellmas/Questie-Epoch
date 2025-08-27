@@ -1,14 +1,26 @@
-# Questie for Epoch
+# Questie for Project Epoch
 
 Questie addon optimized for Project Epoch (3.3.5a) with 600+ custom quests.
 
+## Version 1.0.10 - Latest Updates
+- **Fixed**: Quest tracker now properly displays all quests
+- **Improved**: Automatic quest detection with proper categorization
+- **Added**: Database validator tool (`/epochvalidate`)
+- **Enhanced**: Quest prefixes now correctly show [Epoch] for custom content, [Missing] for vanilla
+
 ## Features
-- Epoch quest database (IDs 26000-26999) - many still need validation
-- NEW: Developer mode for community quest data collection
-- NEW: Real-time capture of NPCs, items, and objective locations with devmode enabled.
+- Epoch quest database with 600+ custom quests (IDs 26000+)
+- Automatic runtime stubs for missing quests - tracker works even without full data
+- Developer mode for community quest data collection
+- Real-time capture of NPCs, items, and objective locations
+
+## Quest Prefixes in Tracker
+- **[Epoch]** - Project Epoch custom quests (ID 26000+) not yet in database
+- **[Missing]** - Vanilla/TBC/WotLK quests (ID < 26000) missing from database
+- **No prefix** - Fully implemented quests with complete data
 
 ## Developer Mode
-Automatically captures quest data while you play. Quests needing validation show "[Epoch]" prefix. Credit to @desizt and @esurm for this clever addition.
+Automatically captures quest data while you play. Quests showing prefixes need data collection. Credit to @desizt and @esurm for this system.
 
 ### Commands
 - `/qdc enable/disable` - Toggle data collection
@@ -17,12 +29,16 @@ Automatically captures quest data while you play. Quests needing validation show
 - `/qdc show` - View tracked quests
 - `/qdc clear` - Clear all data
 
-### Contributing
+### Contributing Quest Data
 1. Enable dev mode: `/qdc enable`
-2. Complete Epoch quests normally
-3. A raid warning sound and a chatlog print will occur when you've accepted a quest not in the Epoch database, if dev mode is enabled.
-4. Export data: `/qdc export`
-5. Submit to: https://github.com/trav346/Questie-Epoch/issues NOTE: you must have a github account to submit issues.
+2. Accept and complete quests with [Epoch] or [Missing] prefixes
+3. You'll see a raid warning sound when capturing new quest data
+4. Export data: `/qdc export <questId>` or `/qdc export` for all
+5. Submit to: https://github.com/trav346/Questie-Epoch/issues
+
+### Additional Commands
+- `/epochvalidate` - Run database integrity check
+- `/questie` - Open configuration menu
 
 ## Support
 Report issues or submit quest data on GitHub.
