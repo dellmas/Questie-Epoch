@@ -260,11 +260,25 @@ function QuestieTracker.Initialize()
 
             -- Look for any QuestID's that don't belong in the Questie.db.char.TrackedQuests or
             -- the Questie.db.char.AutoUntrackedQuests tables. They can get out of sync.
+            -- Also ensure runtime stub quests aren't incorrectly untracked.
             if Questie.db.profile.autoTrackQuests and Questie.db.char.AutoUntrackedQuests then
+                local toRemove = {}
                 for untrackedQuestId in pairs(Questie.db.char.AutoUntrackedQuests) do
                     if not QuestiePlayer.currentQuestlog[untrackedQuestId] then
-                        Questie.db.char.AutoUntrackedQuests[untrackedQuestId] = nil
+                        -- Quest no longer in log, remove from untracked list
+                        toRemove[untrackedQuestId] = true
+                    else
+                        -- Check if this is a runtime stub quest that shouldn't be untracked
+                        local quest = QuestieDB.GetQuest(untrackedQuestId)
+                        if quest and quest.isRuntimeStub then
+                            -- Runtime stub quests should be tracked by default when autoTrackQuests is on
+                            toRemove[untrackedQuestId] = true
+                            Questie:Debug(Questie.DEBUG_INFO, "[QuestieTracker] Re-tracking runtime stub quest:", untrackedQuestId)
+                        end
                     end
+                end
+                for questId in pairs(toRemove) do
+                    Questie.db.char.AutoUntrackedQuests[questId] = nil
                 end
             elseif Questie.db.char.TrackedQuests then
                 for trackedQuestId in pairs(Questie.db.char.TrackedQuests) do
@@ -2358,13 +2372,21 @@ function QuestieTracker:AQW_Insert(index, expire)
                 if not Questie.db.char.AutoUntrackedQuests then
                     Questie.db.char.AutoUntrackedQuests = {}
                 end
-                Questie.db.char.AutoUntrackedQuests[questId] = true
+                -- Don't auto-untrack runtime stub quests
+                local quest = QuestieDB.GetQuest(questId)
+                if not (quest and quest.isRuntimeStub) then
+                    Questie.db.char.AutoUntrackedQuests[questId] = true
+                end
             else
                 -- Regular click on an already tracked quest - untrack it
                 if not Questie.db.char.AutoUntrackedQuests then
                     Questie.db.char.AutoUntrackedQuests = {}
                 end
-                Questie.db.char.AutoUntrackedQuests[questId] = true
+                -- Don't auto-untrack runtime stub quests
+                local quest = QuestieDB.GetQuest(questId)
+                if not (quest and quest.isRuntimeStub) then
+                    Questie.db.char.AutoUntrackedQuests[questId] = true
+                end
             end
         end
 

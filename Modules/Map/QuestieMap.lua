@@ -208,6 +208,7 @@ function QuestieMap.GetScaleValue()
             scaling = 0.9
         end
     end
+    
     return scaling
 end
 

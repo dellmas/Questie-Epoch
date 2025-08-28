@@ -59,7 +59,7 @@ function QuestieSlash.HandleCommands(input)
         print(Questie:Colorize("/questie tomap [<npcId>/<npcName>/reset] - " .. l10n("Adds manual notes to the map for a given NPC ID or name. If the name is ambiguous multipe notes might be added. Without a second command the target will be added to the map. The 'reset' command removes all notes"), "yellow"));
         print(Questie:Colorize("/questie minimap - " .. l10n("Toggles the Minimap Button for Questie"), "yellow"));
         print(Questie:Colorize("/questie journey - " .. l10n("Toggles the My Journey window"), "yellow"));
-        print(Questie:Colorize("/questie tracker [show/hide/reset/debug] - " .. l10n("Toggles the Tracker. Add 'show', 'hide', 'reset', 'debug' to explicit show/hide, reset, or debug the Tracker"), "yellow"));
+        print(Questie:Colorize("/questie tracker [show/hide/reset/clear/debug] - " .. l10n("Toggles the Tracker. Add 'show', 'hide', 'reset', 'clear', 'debug' to explicit show/hide, reset, clear untracked list, or debug the Tracker"), "yellow"));
         print(Questie:Colorize("/questie dumplog - " .. l10n("Export your quest log data for troubleshooting"), "yellow"));
         print(Questie:Colorize("/questie flex - " .. l10n("Flex the amount of quests you have completed so far"), "yellow"));
         print(Questie:Colorize("/questie doable [questID] - " .. l10n("Prints whether you are eligibile to do a quest"), "yellow"));
@@ -300,6 +300,11 @@ function QuestieSlash.HandleCommands(input)
             QuestieTracker:Disable()
         elseif subCommand == "reset" then
             QuestieTracker:ResetLocation()
+        elseif subCommand == "clear" then
+            -- Clear the AutoUntrackedQuests table to re-track all quests
+            Questie.db.char.AutoUntrackedQuests = {}
+            Questie:Print("|cFF00FF00[Questie] Cleared untracked quests list. All quests will now be tracked.|r")
+            QuestieTracker:Update()
         elseif subCommand == "debug" then
             -- Debug command to diagnose tracker issues
             local debugOutput = {}
