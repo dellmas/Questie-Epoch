@@ -1317,7 +1317,7 @@ function QuestieDataCollector:OnItemPush(bagSlot)
     -- Track when quest items are received from objects
     if _lastInteractedObject and (time() - _lastInteractedObject.timestamp < 3) then
         -- Get item info from the bag slot
-        C_Timer.After(0.1, function()
+        QuestieCompat.C_Timer.After(0.1, function()
             for bag = 0, 4 do
                 for slot = 1, GetContainerNumSlots(bag) do
                     local itemLink = GetContainerItemLink(bag, slot)
@@ -2152,7 +2152,7 @@ autoInitFrame:RegisterEvent("ADDON_LOADED")
 autoInitFrame:SetScript("OnEvent", function(self, event, arg1)
     if event == "ADDON_LOADED" and arg1 == "Questie" then
         -- Try initializing as soon as Questie loads
-        C_Timer.After(0.1, function()
+        QuestieCompat.C_Timer.After(0.1, function()
             if Questie and Questie.db and Questie.db.profile.enableDataCollection then
                 if not _initialized then
                     DEFAULT_CHAT_FRAME:AddMessage("|cFFFFFF00[DATA COLLECTOR] Initializing after Questie load...|r", 1, 1, 0)
@@ -2163,7 +2163,7 @@ autoInitFrame:SetScript("OnEvent", function(self, event, arg1)
     elseif event == "PLAYER_ENTERING_WORLD" then
         self:UnregisterEvent("PLAYER_ENTERING_WORLD")
         -- Fallback initialization if ADDON_LOADED didn't work
-        C_Timer.After(0.5, function()
+        QuestieCompat.C_Timer.After(0.5, function()
             if Questie and Questie.db and Questie.db.profile.enableDataCollection then
                 if not _initialized then
                     DEFAULT_CHAT_FRAME:AddMessage("|cFFFFFF00[DATA COLLECTOR] Auto-initializing after login...|r", 1, 1, 0)
