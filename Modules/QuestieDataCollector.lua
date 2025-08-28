@@ -1905,12 +1905,41 @@ function QuestieDataCollector:GenerateExportText(questId, data, skipInstructions
             end
             
             -- Show NPC IDs for kill objectives
+            -- Check both npcs and mobLocations for mob data
             if obj.npcs then
                 text = text .. "     NPCs: "
                 for npcId, npcName in pairs(obj.npcs) do
                     text = text .. npcName .. " (ID: " .. npcId .. ") "
                 end
                 text = text .. "\n"
+            elseif obj.mobLocations and #obj.mobLocations > 0 then
+                text = text .. "     Mobs tracked:\n"
+                local mobsByName = {}
+                for _, mobLoc in ipairs(obj.mobLocations) do
+                    if not mobsByName[mobLoc.name] then
+                        mobsByName[mobLoc.name] = {
+                            id = mobLoc.npcId,
+                            locations = {}
+                        }
+                    end
+                    table.insert(mobsByName[mobLoc.name].locations, {
+                        coords = mobLoc.coords,
+                        zone = mobLoc.zone
+                    })
+                end
+                
+                for mobName, mobInfo in pairs(mobsByName) do
+                    text = text .. "       - " .. mobName .. " (ID: " .. mobInfo.id .. ")\n"
+                    if #mobInfo.locations > 0 then
+                        for i = 1, math.min(3, #mobInfo.locations) do
+                            local loc = mobInfo.locations[i]
+                            text = text .. "         [" .. loc.coords.x .. ", " .. loc.coords.y .. "] in " .. loc.zone .. "\n"
+                        end
+                        if #mobInfo.locations > 3 then
+                            text = text .. "         ... and " .. (#mobInfo.locations - 3) .. " more locations\n"
+                        end
+                    end
+                end
             end
             
             -- Show progress locations
