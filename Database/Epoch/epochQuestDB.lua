@@ -639,7 +639,7 @@ epochQuestData[26796] = {"A Lost Warrior",nil,{{3447}},nil,24,178,nil,nil,nil,{n
 epochQuestData[26824] = {"WANTED: Archmage Zygor",nil,nil,nil,25,178,nil,nil,nil,{nil,nil,{{62648,nil}}},nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,8,0,nil,nil,nil,nil,nil,nil}
 
 -- Missing quest from user's quest dump
-epochQuestData[26941] = {"Scarlet Intelligence",{{1746}},nil,nil,9,178,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
+epochQuestData[26941] = {"Scarlet Intelligence",nil,{{1746}},nil,9,178,nil,nil,nil,{{{13158,nil,1}},nil,{{62815,nil}}},nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil} -- Kill Lieutenant Sanders (87,43) for key (17242), use on chest (40000057) for documents
 
 -- Missing quests from issue #7 GitHub submission
 epochQuestData[26284] = {"Azothan Relics",nil,nil,nil,43,178,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
@@ -664,7 +664,6 @@ epochQuestData[26461] = {"Our Bodies Forsaken",{{45501}},{{45242}},nil,13,178,ni
 -- Incomplete data quests (need to be re-accepted for full data)
 epochQuestData[26926] = {"A Box of Relics",nil,nil,nil,9,178,nil,nil,nil,{nil,nil,{{62796,"Box of Collected Relics"}}},nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil} -- Collect Box of Collected Relics from object in Tirisfal Glades (22.4, 50.9)
 epochQuestData[26927] = {"A Box of Relics",nil,{{45886}},nil,9,178,nil,nil,nil,nil,nil,nil,{26926},nil,nil,nil,1458,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil} -- Turn in to Historian Eva Trelayne in Undercity
-epochQuestData[26941] = {"Scarlet Intelligence",nil,nil,nil,9,178,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
 
 -- Missing quests from issue #14 (Searing Gorge and Badlands)
 epochQuestData[26854] = {"Twilight Tactics",nil,nil,nil,45,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}

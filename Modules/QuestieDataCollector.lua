@@ -2331,14 +2331,14 @@ SlashCmdList["QUESTIEDATACOLLECTOR"] = function(msg)
     elseif string.sub(cmd, 1, 6) == "export" then
         -- Export specific quest or show selection window
         local questId = tonumber(string.sub(cmd, 8))
-        DEFAULT_CHAT_FRAME:AddMessage("|cFFCCCCCC[DEBUG] Export command received. QuestId: " .. tostring(questId) .. "|r", 0.8, 0.8, 0.8)
+        -- DEBUG: Export command received
         if questId then
             -- Export specific quest: /qdc export 26934
             DEFAULT_CHAT_FRAME:AddMessage("|cFFCCCCCC[DEBUG] Calling ShowExportWindow with questId: " .. questId .. "|r", 0.8, 0.8, 0.8)
             QuestieDataCollector:ShowExportWindow(questId)
         else
             -- No quest ID specified, show selection window
-            DEFAULT_CHAT_FRAME:AddMessage("|cFFCCCCCC[DEBUG] Calling ShowQuestSelectionWindow|r", 0.8, 0.8, 0.8)
+            -- DEBUG: Calling ShowQuestSelectionWindow
             QuestieDataCollector:ShowQuestSelectionWindow()
         end
         
