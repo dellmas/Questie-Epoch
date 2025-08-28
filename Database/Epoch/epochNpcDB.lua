@@ -649,7 +649,7 @@ local epochNpcData = {
 [45877] = {"Innkeeper Finmir",1200,1350,30,30,0,{[8]={{25.44,31.07}}},nil,8,{9610},{9610},11,"A",nil,128},
 [45878] = {"Manaar the Watcher",1680,1890,42,42,0,{[8]={{26.18,38.91}}},nil,8,{9609},{26923},11,"A",nil,0},
 [45885] = {"Jasper Greene",nil,nil,9,9,0,{[85]={{38.8,52.6}}},nil,85,{26925,26937},{26937},nil,nil,nil,0},
-[45886] = {"Unknown NPC (was Jasper Greene - moved to 45885)",nil,nil,8,8,0,{[85]={{38.9,52.6}}},nil,85,{26925},nil,nil,nil,nil,0},
+[45886] = {"Historian Eva Trelayne",nil,nil,9,9,0,{[1458]={{75.8,37.8}}},nil,1458,nil,{26927},nil,"H",nil,0}, -- In Undercity Magic Quarter
 [45887] = {"Historian Todd Page",nil,nil,9,9,0,{[85]={{60.6,51.0}}},nil,85,{26926},{26925},nil,nil,nil,0},
 [45888] = {"Lost Ancient",1920,2160,48,48,0,{[357]={{55.84,73.56}}},nil,357,nil,nil,nil,nil,nil,0},
 [45895] = {"Dark Ooze",nil,nil,9,10,0,{[85]={{24.5,49.5},{24.1,50},{24.1,50.4},{23.9,51.1},{23.8,51},{23.7,51.7},{24.2,49.7}}},nil,85,nil,nil,nil,nil,nil,0},
