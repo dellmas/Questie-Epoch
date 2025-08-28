@@ -168,6 +168,12 @@ end
 ---@param objective any
 ---@return { [1]: SpawnListEvent }?
 event = function(eventId, objective)
+    -- Skip event objectives for Northshore Mine quest as it has exploration mechanics that aren't properly supported
+    if objective and objective.Description and string.find(objective.Description, "Northshore Mine Explored") then
+        Questie:Debug(Questie.DEBUG_INFO, "[QuestieQuestPrivates] Skipping Northshore Mine exploration objective")
+        return {}
+    end
+    
     local spawns = objective.Coordinates
     if (not spawns) then
         Questie:Error("Missing event data for Objective:", objective.Description, "id:", eventId)

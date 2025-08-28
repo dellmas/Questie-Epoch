@@ -250,7 +250,7 @@ local epochQuestData = {
 [26926] = {"A Box of Relics",{{45887}},nil,nil,9,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil},
 [26932] = {"Encroaching Worgs",{{1738}},{{1738}},nil,8,nil,nil,nil,nil,{{{45205,nil,5}}},nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,8,0,nil,nil,nil,nil,nil,nil},
 [26934] = {"Filling the Armory",{{2136}},{{2136}},nil,9,nil,nil,nil,nil,{nil,nil,{{62803,nil,6}}},nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,8,0,nil,nil,nil,nil,nil,nil},
-[26936] = {"Northshore Mine",nil,{{45886}},nil,9,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,nil,0,nil,nil,{{{[85]={{24.5,49.5},{24.1,50},{23.8,51}}}, 3, "Explore Northshore Mine", 2}},nil,nil,nil},
+[26936] = {"Northshore Mine",nil,{{45886}},nil,9,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil},
 [26937] = {"Northshore Mine",{{45885}},{{45885}},nil,9,178,nil,nil,nil,{{{45895,nil,10}}},nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,8,0,nil,nil,nil,nil,nil,nil},
 [26939] = {"Peace in Death",{{45898}},{{45898}},nil,5,nil,nil,nil,nil,{nil,{{4000009,nil}},{{62811,nil}}},62811,nil,{376},nil,nil,nil,85,nil,nil,nil,{62808,62809,62810},nil,nil,0,nil,nil,nil,nil,nil,nil},
 [26940] = {"Reclaim the Mine",{{45899}},{{45899}},nil,10,nil,nil,nil,nil,{{{45103,nil,10},{45104,nil,3}}},nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,8,0,nil,nil,nil,nil,nil,nil},

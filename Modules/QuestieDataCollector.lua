@@ -67,8 +67,7 @@ function QuestieDataCollector:Initialize()
     
     _initialized = true
     
-    DEFAULT_CHAT_FRAME:AddMessage("|cFFFF0000[Questie Data Collector]|r DEVELOPER MODE ACTIVE - Tracking missing quest data", 1, 0, 0)
-    DEFAULT_CHAT_FRAME:AddMessage("|cFFFFFF00Use /qdc for commands. Disable in Advanced settings when done.|r", 1, 1, 0)
+    DEFAULT_CHAT_FRAME:AddMessage("|cFF00FF00[Questie Data Collector]|r Enabled. Thank you for contributing! |cFFFFFF00Use /qdc for commands|r", 0, 1, 0)
     
     -- Check existing quests in log
     QuestieDataCollector:CheckExistingQuests()
@@ -272,7 +271,7 @@ function QuestieDataCollector:EnableTooltipIDs()
     Questie.db.profile.enableTooltipsObjectID = true
     Questie.db.profile.enableTooltipsQuestID = true
     
-    DEFAULT_CHAT_FRAME:AddMessage("|cFFFFFF00[DATA COLLECTOR] Tooltip IDs enabled for data collection|r", 1, 1, 0)
+    -- Removed redundant message since we already show enabled status in Initialize()
 end
 
 function QuestieDataCollector:RestoreTooltipIDs()
@@ -2155,7 +2154,7 @@ autoInitFrame:SetScript("OnEvent", function(self, event, arg1)
         C_Timer.After(0.1, function()
             if Questie and Questie.db and Questie.db.profile.enableDataCollection then
                 if not _initialized then
-                    DEFAULT_CHAT_FRAME:AddMessage("|cFFFFFF00[DATA COLLECTOR] Initializing after Questie load...|r", 1, 1, 0)
+                    -- Silently initialize - we'll show the message in Initialize()
                     QuestieDataCollector:Initialize()
                 end
             end
