@@ -115,6 +115,9 @@ function TrackerUtils:SetTomTomTarget(title, zone, x, y)
         else
             Questie.db.char._tom_waypoint = TomTom:AddWaypoint(uiMapId, x / 100, y / 100, { title = title, crazy = true })
         end
+    else
+        -- Warn the user that TomTom is not installed
+        Questie:Print("|cFFFF0000TomTom addon is not installed!|r Please install TomTom to use waypoint features.")
     end
 end
 

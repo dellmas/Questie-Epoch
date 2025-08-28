@@ -612,6 +612,11 @@ function QuestieMap:DrawWorldIcon(data, areaID, x, y, showFlag)
 
     --print("UIMAPID: " .. tostring(uiMapId))
     if not uiMapId then
+        -- Handle continent zones gracefully (1414=Kalimdor, 1415=Eastern Kingdoms)
+        if areaID == 1414 or areaID == 1415 then
+            Questie:Debug(Questie.DEBUG_DEVELOP, "[QuestieMap] Skipping continent-level icon for zone:", areaID, data.Name)
+            return nil, nil
+        end
         --ZoneDB:GetUiMapIdByAreaId
         error("No UiMapID or fitting uiMapId for areaId : " .. areaID .. " - " .. tostring(data.Name))
         return nil, nil
