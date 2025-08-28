@@ -650,5 +650,8 @@ epochQuestData[26287] = {"Prismatic Scales",nil,nil,nil,40,178,nil,nil,nil,nil,n
 epochQuestData[26292] = {"Tunnel Monster",nil,nil,nil,40,178,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
 epochQuestData[26502] = {"Rare Books",nil,{{2277}},nil,42,178,nil,nil,nil,{nil,nil,{{62294,nil},{62293,nil}}},nil,nil,nil,nil,nil,nil,267,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
 
+-- Quest from user's current data dump
+epochQuestData[26455] = {"Seeking Redemption",{{45383}},nil,nil,12,178,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
+
 -- Stage the Epoch questData for later merge during compilation
 QuestieDB._epochQuestData = epochQuestData
