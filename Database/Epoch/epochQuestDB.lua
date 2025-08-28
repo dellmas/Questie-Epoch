@@ -246,7 +246,6 @@ local epochQuestData = {
 [26929] = {"Arugal Ambush",{{45888}},{{45888}},nil,11,nil,nil,nil,nil,nil,nil,nil,{26928},{26930},nil,nil,130,nil,nil,nil,nil,26930,nil,0,26928,nil,nil,nil,nil,nil}, -- Updated from issue #20
 [26930] = {"[Epoch] Quest 26930",{{45139}},{{45141}},nil,11,nil,nil,nil,nil,nil,nil,nil,{26929},{26931},nil,nil,130,nil,nil,nil,nil,26931,nil,0,26929,nil,nil,nil,nil,nil},
 [26931] = {"[Epoch] Quest 26931",{{45141}},{{45140}},nil,11,nil,nil,nil,nil,nil,nil,nil,{26930},nil,nil,nil,130,nil,nil,nil,nil,nil,nil,0,26930,nil,nil,nil,nil,nil},
-[26926] = {"A Box of Relics",{{45887}},nil,nil,9,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil},
 [26932] = {"Encroaching Worgs",{{1738}},{{1738}},nil,8,nil,nil,nil,nil,{{{45205,nil,5}}},nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,8,0,nil,nil,nil,nil,nil,nil},
 [26934] = {"Filling the Armory",{{2136}},{{2136}},nil,9,nil,nil,nil,nil,{nil,nil,{{62803,nil,6}}},nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,8,0,nil,nil,nil,nil,nil,nil},
 [26936] = {"Northshore Mine",nil,{{45886}},nil,9,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil},
@@ -662,7 +661,7 @@ epochQuestData[26460] = {"Our Bodies Forsaken",{{45502}},{{45502}},nil,13,178,2,
 epochQuestData[26461] = {"Our Bodies Forsaken",{{45501}},{{45242}},nil,13,178,nil,nil,nil,{{{1537},{1538}}},nil,{26460},nil,nil,nil,nil,85,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil} -- Kill 3 Zealots and 3 Friars
 
 -- Incomplete data quests (need to be re-accepted for full data)
-epochQuestData[26926] = {"A Box of Relics",nil,nil,nil,9,178,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
+epochQuestData[26926] = {"A Box of Relics",nil,nil,nil,9,178,nil,nil,nil,{nil,nil,{{62796,"Box of Collected Relics"}}},nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil} -- Collect Box of Collected Relics from object in Tirisfal Glades (22.4, 50.9)
 epochQuestData[26927] = {"A Box of Relics",nil,{{45886}},nil,9,178,nil,nil,nil,nil,nil,nil,{26926},nil,nil,nil,1458,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil} -- Turn in to Historian Eva Trelayne in Undercity
 epochQuestData[26941] = {"Scarlet Intelligence",nil,nil,nil,9,178,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
 

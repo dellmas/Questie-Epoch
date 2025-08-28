@@ -305,6 +305,7 @@ local epochItemData = {
 [62620] = {"Eston's Key",nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,{26796}},
 [62648] = {"Zygor's Head",nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,{26824}},
 [62271] = {"Symbol of Life",nil,nil,nil,nil,{26460},nil,nil,nil,13,13,nil,nil,nil}, -- Paladin quest item
+[62796] = {"Box of Collected Relics",nil,nil,nil,nil,{26926},nil,nil,nil,nil,nil,nil,nil,nil}, -- Quest item from object in Tirisfal Glades (22.4, 50.9)
 }
 
 -- Stage the Epoch itemData for later merge during compilation
