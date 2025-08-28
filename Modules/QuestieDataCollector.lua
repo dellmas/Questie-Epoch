@@ -8,6 +8,7 @@ local QuestieLib = QuestieLoader:ImportModule("QuestieLib")
 
 -- Import QuestieCompat for proper WoW 3.3.5 API compatibility
 local QuestieCompat = _G.QuestieCompat or {}
+local C_Timer = QuestieCompat.C_Timer
 
 -- SavedVariables table for collected data
 -- This will be initialized after ADDON_LOADED event
