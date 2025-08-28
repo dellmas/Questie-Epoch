@@ -174,6 +174,17 @@ function QuestieTracker.Initialize()
     end
     -- Questie:Print("[QuestieTracker] Quest frame initialized") -- Removed to reduce login spam
 
+    if Questie.db.profile.tomtomAutoTargetMode then
+        success, err = pcall(function()
+            TrackerUtils:StartTomTomAutoTracking()
+        end)
+        if not success then
+            Questie:Print("|cFFFF0000[QuestieTracker] ERROR: Failed to start TomTom auto tracking: " .. tostring(err) .. "|r")
+            return
+        end
+        Questie:Print("[QuestieTracker] TomTom auto tracking started")
+    end
+
     -- Initialize tracker functions
     TrackerLinePool.Initialize(trackerQuestFrame)
     TrackerFadeTicker.Initialize(trackerBaseFrame, trackerHeaderFrame)
@@ -192,6 +203,7 @@ function QuestieTracker.Initialize()
 
     -- Insures all other data we're getting from other addons and WoW is loaded. There are edge
     -- cases where Questie loads too fast before everything else is available.
+
     C_Timer.After(1.0, function()
         -- Hide frames during startup
         if QuestieTracker.alreadyHooked then
