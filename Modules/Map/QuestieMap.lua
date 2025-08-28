@@ -209,6 +209,11 @@ function QuestieMap.GetScaleValue()
         end
     end
     
+    -- Maintain icon scale when zooming (from PR #44)
+    if WorldMapDetailFrame then
+        scaling = scaling / WorldMapDetailFrame:GetScale()
+    end
+    
     return scaling
 end
 
@@ -314,6 +319,7 @@ function QuestieMap.ProcessQueue()
 
             --? If you ever chanage this logic, make sure you change the logic in QuestieMap.utils:RescaleIcon function too!
             local size = (16 * (frame.data.IconScale or 1) * (Questie.db.profile.globalScale or 0.7)) * scaleValue;
+            
             frame:SetSize(size, size)
 
             QuestieMap.utils:SetDrawOrder(frame);

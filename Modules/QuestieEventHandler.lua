@@ -233,6 +233,11 @@ function _EventHandler:PlayerLogin()
         error("Config DB from saved variables is not loaded and initialized. Please report this issue on Questie github or discord.")
         return
     end
+    
+    -- Maintain icon scale when map zoom changes (from PR #44)
+    if WorldMapDetailFrame then
+        hooksecurefunc(WorldMapDetailFrame, "SetScale", QuestieMap.RescaleIcons)
+    end
 
     do
         -- All this information was researched here: https://www.townlong-yak.com/framexml/live/GlobalStrings.lua
