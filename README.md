@@ -2,11 +2,15 @@
 
 Questie addon optimized for Project Epoch (3.3.5a) with 600+ custom quests.
 
-## Version 1.0.10 - Latest Updates
-- **Fixed**: Quest tracker now properly displays all quests
-- **Improved**: Automatic quest detection with proper categorization
-- **Added**: Database validator tool (`/epochvalidate`)
-- **Enhanced**: Quest prefixes now correctly show [Epoch] for custom content, [Missing] for vanilla
+## Installation
+
+1. Click the green **`< > Code`** button at the top of this page
+2. Select **Download ZIP**
+3. Extract the downloaded ZIP file
+4. Move the `Questie-Epoch-master` folder to your WoW AddOns folder:
+   - Default location: `C:\Program Files\Ascension Launcher\resources\epoch_live\Interface\Addons`
+5. **Important:** Rename the folder from `Questie-Epoch-master` to just `Questie`
+6. Restart WoW or type `/reload` if already in game
 
 ## Features
 - Epoch quest database with 600+ custom quests (IDs 26000+)
