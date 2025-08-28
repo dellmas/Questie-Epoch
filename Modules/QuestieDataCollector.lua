@@ -22,6 +22,9 @@ local _currentLootSource = nil -- Track what we're currently looting from
 local _lastInteractedObject = nil -- Track last object we moused over
 local _trackAllEpochQuests = true -- Track all Epoch quests (26xxx range) by default
 
+-- Forward declaration of helper function for creating clickable quest data links
+local CreateQuestDataLink
+
 function QuestieDataCollector:Initialize()
     -- Prevent double initialization
     if _initialized then
@@ -1516,7 +1519,7 @@ end
 -- This slash command handler is replaced by the more complete one below
 
 -- Helper function for creating clickable quest data links
-local function CreateQuestDataLink(questId, questName)
+CreateQuestDataLink = function(questId, questName)
     local linkText = "|cFF00FF00|Hquestiedata:" .. questId .. "|h[Click here to submit quest data for: " .. (questName or "Quest " .. questId) .. "]|h|r"
     return linkText
 end
