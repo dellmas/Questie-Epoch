@@ -12,7 +12,6 @@ Questie addon optimized for Project Epoch (3.3.5a) with 600+ custom quests.
 5. **Important:** Rename the folder from `Questie-Epoch-master` to just `Questie`
 
 ## Features
-- Epoch quest database with 600+ custom quests (IDs 26000+)
 - Automatic runtime stubs for missing quests - tracker works even without full data
 - Developer mode for community quest data collection
 - Real-time capture of NPCs, items, and objective locations

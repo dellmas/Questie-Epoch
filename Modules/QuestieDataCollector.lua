@@ -856,8 +856,15 @@ function QuestieDataCollector:OnQuestLogUpdate()
                             timestamp = time()
                         }
                         
+                        -- Special handling for exploration objectives
+                        if objectiveType == "event" or objectiveType == "area" then
+                            locData.action = "Explored area"
+                            DEFAULT_CHAT_FRAME:AddMessage("|cFF00FF00[DATA] Exploration objective captured at [" .. 
+                                (locData.coords and locData.coords.x or 0) .. ", " .. 
+                                (locData.coords and locData.coords.y or 0) .. "] in " .. 
+                                (locData.subzone or locData.zone or "Unknown") .. "|r", 0, 1, 0)
                         -- Try to correlate with recent kills for monster objectives
-                        if objectiveType == "monster" and _recentKills and #_recentKills > 0 then
+                        elseif objectiveType == "monster" and _recentKills and #_recentKills > 0 then
                             -- Check most recent kill (within 2 seconds)
                             local recentKill = _recentKills[#_recentKills]
                             if time() - recentKill.timestamp <= 2 then
