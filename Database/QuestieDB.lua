@@ -1353,6 +1353,32 @@ function QuestieDB.GetQuest(questId) -- /dump QuestieDB.GetQuest(867)
     QO.level = questLevel
     QO.requiredLevel = requiredLevel
 
+    -- Check if this is an incomplete Epoch quest that needs the [Epoch] prefix
+    if questId >= 26000 and questId < 27000 then
+        local hasIncompleteData = false
+        
+        -- Check for missing quest givers
+        local startedBy = QO.startedBy
+        if not startedBy or 
+           (type(startedBy) == "table" and 
+            (not startedBy[1] or #startedBy[1] == 0) and
+            (not startedBy[2] or #startedBy[2] == 0) and
+            (not startedBy[3] or #startedBy[3] == 0)) then
+            hasIncompleteData = true
+        end
+        
+        -- Check for missing objectives
+        if not QO.objectives and not QO.objectivesText then
+            hasIncompleteData = true
+        end
+        
+        -- Add [Epoch] prefix if quest data is incomplete and doesn't already have it
+        if hasIncompleteData and QO.name and not string.find(QO.name, "%[Epoch%]") then
+            QO.name = "[Epoch] " .. QO.name
+            QO.LocalizedName = "[Epoch] " .. (QO.LocalizedName or QO.name)
+        end
+    end
+
     ---@type StartedBy
     local startedBy = QO.startedBy
     QO.Starts = {

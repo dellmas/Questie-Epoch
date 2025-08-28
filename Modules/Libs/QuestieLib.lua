@@ -135,6 +135,47 @@ end
 function QuestieLib:GetColoredQuestName(questId, showLevel, showState, blizzLike)
     local name = QuestieDB.QueryQuestSingle(questId, "name")
     local level, _ = QuestieLib.GetTbcLevel(questId);
+    
+    -- Check if this is an incomplete Epoch quest that needs the [Epoch] prefix
+    if name and questId >= 26000 and questId < 27000 then
+        -- Check if quest has incomplete data (no objectives or no quest givers)
+        local objectives = QuestieDB.QueryQuestSingle(questId, "objectives")
+        local startedBy = QuestieDB.QueryQuestSingle(questId, "startedBy")
+        
+        -- Remove debug output
+        
+        local hasIncompleteData = false
+        
+        -- Check if objectives are missing or empty
+        if not objectives then
+            hasIncompleteData = true
+        elseif type(objectives) == "table" then
+            -- Check if all objective arrays are empty
+            local hasAnyObjective = false
+            if objectives[1] and #objectives[1] > 0 then hasAnyObjective = true end
+            if objectives[2] and #objectives[2] > 0 then hasAnyObjective = true end
+            if objectives[3] and #objectives[3] > 0 then hasAnyObjective = true end
+            if objectives[4] and #objectives[4] > 0 then hasAnyObjective = true end
+            if objectives[5] and #objectives[5] > 0 then hasAnyObjective = true end
+            if objectives[6] and #objectives[6] > 0 then hasAnyObjective = true end
+            if not hasAnyObjective then
+                hasIncompleteData = true
+            end
+        end
+        
+        -- Also check if quest givers are missing
+        if not hasIncompleteData and (not startedBy or (type(startedBy) == "table" and 
+                                 (not startedBy[1] or #startedBy[1] == 0) and
+                                 (not startedBy[2] or #startedBy[2] == 0) and
+                                 (not startedBy[3] or #startedBy[3] == 0))) then
+            hasIncompleteData = true
+        end
+        
+        -- Add [Epoch] prefix if incomplete and doesn't already have it
+        if hasIncompleteData and not string.find(name, "%[Epoch%]") then
+            name = "[Epoch] " .. name
+        end
+    end
 
     -- Fallbacks for quests missing from DB: check runtime stubs first, then quest log cache
     if not name or name == "" then

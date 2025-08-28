@@ -60,6 +60,8 @@ function QuestieSlash.HandleCommands(input)
         print(Questie:Colorize("/questie minimap - " .. l10n("Toggles the Minimap Button for Questie"), "yellow"));
         print(Questie:Colorize("/questie journey - " .. l10n("Toggles the My Journey window"), "yellow"));
         print(Questie:Colorize("/questie tracker [show/hide/reset/clear/debug] - " .. l10n("Toggles the Tracker. Add 'show', 'hide', 'reset', 'clear', 'debug' to explicit show/hide, reset, clear untracked list, or debug the Tracker"), "yellow"));
+        print(Questie:Colorize("/questie id - Shows quest IDs for all quests in your quest log", "yellow"));
+        print(Questie:Colorize("/questie quest <id> - Debug info for a specific quest ID", "yellow"));
         print(Questie:Colorize("/questie dumplog - " .. l10n("Export your quest log data for troubleshooting"), "yellow"));
         print(Questie:Colorize("/questie flex - " .. l10n("Flex the amount of quests you have completed so far"), "yellow"));
         print(Questie:Colorize("/questie doable [questID] - " .. l10n("Prints whether you are eligibile to do a quest"), "yellow"));
@@ -290,6 +292,175 @@ function QuestieSlash.HandleCommands(input)
         QuestieDebugFrame:Show()
         
         Questie:Print("|cFF00FF00Quest log exported! Copy the data and share on GitHub.|r")
+        return
+    end
+    
+    -- /questie id - Shows quest IDs for all quests in log
+    if mainCommand == "id" then
+        local numEntries = GetNumQuestLogEntries()
+        Questie:Print("|cFF00FF00Scanning quest log... Found " .. numEntries .. " entries|r")
+        
+        if numEntries == 0 then
+            Questie:Print("|cFFFF0000No quests in your quest log.|r")
+            return
+        end
+        
+        Questie:Print("|cFF00FF00Quest IDs in your log:|r")
+        local questCount = 0
+        for i = 1, numEntries do
+            -- Get the quest log title info (WoW 3.3.5a specific)
+            local title, level, tag, arg4, arg5 = GetQuestLogTitle(i)
+            
+            -- In 3.3.5a: arg5 = 1 for headers, nil for quests
+            -- Zone headers have level = 0 and arg5 = 1
+            local isHeader = (arg5 == 1)
+            
+            -- Check if it's an actual quest (not a header)
+            if title and not isHeader then
+                questCount = questCount + 1
+                
+                -- In 3.3.5a, we need to select the quest to get its ID
+                local oldSelection = GetQuestLogSelection()
+                SelectQuestLogEntry(i)
+                local link = GetQuestLink(i)
+                local questID = nil
+                
+                if link then
+                    -- Extract quest ID from the quest link
+                    questID = tonumber(link:match("quest:(%d+)"))
+                end
+                
+                -- Restore old selection
+                if oldSelection then
+                    SelectQuestLogEntry(oldSelection)
+                end
+                -- If still no ID, try getting from QuestiePlayer
+                if (not questID or questID == 0) and QuestiePlayer and QuestiePlayer.currentQuestlog then
+                    for qId, quest in pairs(QuestiePlayer.currentQuestlog) do
+                        if quest.title == title then
+                            questID = qId
+                            break
+                        end
+                    end
+                end
+                
+                if questID and questID > 0 then
+                    Questie:Print(string.format("|cFFFFFF00[%d]|r %s (Level %d)", questID, title, level or 0))
+                else
+                    -- Fallback: try to find quest by name in database
+                    local foundId = nil
+                    
+                    -- First check compiled quest database
+                    if QuestieDB and QuestieDB.questData then
+                        for id, questData in pairs(QuestieDB.questData) do
+                            if questData and questData[1] == title then
+                                foundId = id
+                                break
+                            end
+                        end
+                    end
+                    
+                    if foundId then
+                        Questie:Print(string.format("|cFFFFFF00[%d]|r %s (Level %d) |cFF808080(from DB)|r", foundId, title, level or 0))
+                    else
+                        Questie:Print(string.format("|cFFFF0000[???]|r %s (Level %d) |cFF808080(ID not found)|r", title, level or 0))
+                    end
+                end
+            end
+        end
+        
+        if questCount == 0 then
+            Questie:Print("|cFFFF0000No actual quests found (only headers/categories)|r")
+        else
+            Questie:Print(string.format("|cFF00FF00Total: %d quest(s) found|r", questCount))
+        end
+        return
+    end
+    
+    -- /questie quest <id> - Debug a specific quest (simplified)
+    if mainCommand == "quest" and subCommand then
+        local questId = tonumber(subCommand)
+        if not questId then
+            Questie:Print("|cFFFF0000Invalid quest ID. Usage: /questie quest <questId>|r")
+            return
+        end
+        
+        Questie:Print("|cFF00FF00=== Quest Debug: " .. questId .. " ===|r")
+        
+        -- Check basic database
+        Questie:Print("Checking database...")
+        
+        -- First try just getting the name
+        local nameSuccess, nameResult = pcall(function()
+            if QuestieDB and QuestieDB.QueryQuest then
+                return QuestieDB.QueryQuest(questId, "name")
+            end
+        end)
+        
+        if not nameSuccess then
+            Questie:Print("|cFFFF0000Error getting quest name: " .. tostring(nameResult) .. "|r")
+            Questie:Print("Quest data may be corrupted in database")
+            return
+        end
+        
+        Questie:Print("Quest name from DB: " .. tostring(nameResult))
+        
+        -- Also check QuestieDB.GetQuest
+        local questObj = QuestieDB.GetQuest(questId)
+        if questObj then
+            Questie:Print("Quest name from GetQuest: " .. tostring(questObj.name))
+        else
+            Questie:Print("QuestieDB.GetQuest returned nil")
+        end
+        
+        -- Now try getting other fields
+        local success, result = pcall(function()
+            if QuestieDB and QuestieDB.QueryQuest then
+                local startedBy = QuestieDB.QueryQuest(questId, "startedBy")
+                local objectives = QuestieDB.QueryQuest(questId, "objectives")
+                local objectivesText = QuestieDB.QueryQuest(questId, "objectivesText")
+                return {nameResult, startedBy, objectives, objectivesText}
+            end
+            return nil
+        end)
+        
+        if not success then
+            Questie:Print("|cFFFF0000Error querying database: " .. tostring(result) .. "|r")
+            return
+        end
+        
+        if result and result[1] then
+            Questie:Print("|cFF00FF00Quest found in database|r")
+            if result[1] then Questie:Print("  Name: " .. tostring(result[1])) end
+            if result[2] then Questie:Print("  Has quest giver data") end
+            if result[4] then Questie:Print("  Has objectives text") end
+            if result[3] then Questie:Print("  Has objectives data") end
+        else
+            Questie:Print("|cFFFF0000Quest not in database|r")
+        end
+        
+        -- Check if in quest log
+        Questie:Print("Checking quest log...")
+        local inLog = false
+        for i = 1, GetNumQuestLogEntries() do
+            local title, level, tag, arg4, arg5 = GetQuestLogTitle(i)
+            if arg5 ~= 1 then -- Not a header
+                SelectQuestLogEntry(i)
+                local link = GetQuestLink(i)
+                if link then
+                    local qId = tonumber(link:match("quest:(%d+)"))
+                    if qId == questId then
+                        inLog = true
+                        Questie:Print("|cFF00FF00Quest IS in your log: " .. title .. "|r")
+                        break
+                    end
+                end
+            end
+        end
+        if not inLog then
+            Questie:Print("|cFFFF0000Quest NOT in your log|r")
+        end
+        
         return
     end
     

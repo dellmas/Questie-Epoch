@@ -720,8 +720,48 @@ function QuestieDataCollector:OnQuestAccepted(questId)
     local hasEpochPrefix = questData and questData.name and string.find(questData.name, "%[Epoch%]")
     local isMissingFromDB = not questData
     
-    -- Only track if it's an Epoch quest that's missing or has placeholder data
-    if isEpochQuest and (isMissingFromDB or hasEpochPrefix) then
+    -- Check if quest has incomplete data (missing quest givers or objectives)
+    local hasIncompleteData = false
+    if questData and isEpochQuest then
+        -- Check if quest is missing critical data using individual queries to avoid compiler error
+        local startedBy = QuestieDB.QueryQuestSingle(questId, "startedBy")
+        local objectives = QuestieDB.QueryQuestSingle(questId, "objectives")
+        local objectivesText = QuestieDB.QueryQuestSingle(questId, "objectivesText")
+        
+        -- Check if quest givers are missing
+        if not startedBy or (type(startedBy) == "table" and 
+                             (not startedBy[1] or #startedBy[1] == 0) and
+                             (not startedBy[2] or #startedBy[2] == 0) and
+                             (not startedBy[3] or #startedBy[3] == 0)) then
+            hasIncompleteData = true
+        end
+        
+        -- Check if objectives are missing or empty
+        if not hasIncompleteData then
+            if not objectives then
+                -- No objectives at all is incomplete
+                hasIncompleteData = true
+            elseif type(objectives) == "table" then
+                -- Check if all objective arrays are empty
+                local hasAnyObjective = false
+                if objectives[1] and #objectives[1] > 0 then hasAnyObjective = true end
+                if objectives[2] and #objectives[2] > 0 then hasAnyObjective = true end
+                if objectives[3] and #objectives[3] > 0 then hasAnyObjective = true end
+                if objectives[4] and #objectives[4] > 0 then hasAnyObjective = true end
+                if objectives[5] and #objectives[5] > 0 then hasAnyObjective = true end
+                if objectives[6] and #objectives[6] > 0 then hasAnyObjective = true end
+                if not hasAnyObjective then
+                    -- Empty objectives = incomplete, even if objectivesText exists
+                    -- objectivesText is just description, not actual trackable objectives
+                    hasIncompleteData = true
+                end
+            end
+        end
+    end
+    
+    
+    -- Track if it's an Epoch quest that's missing, has placeholder data, or has incomplete data
+    if isEpochQuest and (isMissingFromDB or hasEpochPrefix or hasIncompleteData) then
         -- ALERT! Missing quest detected!
         local questTitle = QuestieCompat.GetQuestLogTitle(QuestieDataCollector:GetQuestLogIndexById(questId))
         
@@ -1913,7 +1953,8 @@ function QuestieDataCollector:ShowExportWindow(questId)
         for _, qId in ipairs(questList) do
             local data = QuestieDataCollection.quests[qId]
             exportText = exportText .. "════════════════════════════════════════\n"
-            exportText = exportText .. QuestieDataCollector:GenerateExportText(qId, data)
+            -- Skip instructions for batch exports since they're already at the top
+            exportText = exportText .. QuestieDataCollector:GenerateExportText(qId, data, true)
             exportText = exportText .. "\n"
         end
     end
