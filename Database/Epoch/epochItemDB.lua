@@ -306,6 +306,15 @@ local epochItemData = {
 [62648] = {"Zygor's Head",nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,{26824}},
 [62271] = {"Symbol of Life",nil,nil,nil,nil,{26460},nil,nil,nil,13,13,nil,nil,nil}, -- Paladin quest item
 [62796] = {"Box of Collected Relics",nil,nil,nil,nil,{26926},nil,nil,nil,nil,nil,nil,nil,nil}, -- Quest item from object in Tirisfal Glades (22.4, 50.9)
+[62391] = {"Nethergarde Insignia",{5999,6000,6001},nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,{26605}},
+[62392] = {"Nethergarde Ore Shipment",nil,{4001027},nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,{26606}},
+[62393] = {"Redstone Flank",{5991},nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,{26607}},
+[62395] = {"Ragged Ear",{6004,6005,6006},nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,{26608}},
+[62396] = {"Felstone Gold Ore",{6007},nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,{26609}},
+[60763] = {"Glyph of Affliction",{6004,6005,6006},nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,{26267}},
+[62385] = {"Elaborate Timepiece",{6008},nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,{26611}},
+[62386] = {"Magic Drum",{6009},nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,{26611}},
+[62387] = {"Twisted Staff",{6010},nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,{26611}},
 }
 
 -- Stage the Epoch itemData for later merge during compilation
