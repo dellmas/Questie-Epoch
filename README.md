@@ -1,4 +1,4 @@
- Questie for Project Epoch - Version 1.0.33 Release
+ Questie for Project Epoch - Version 1.0.35 Release
 
  💡 Known Issues
 
