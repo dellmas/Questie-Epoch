@@ -1702,7 +1702,7 @@ function QuestieDataCollector:ShowExportWindow(questId)
         
         local step3 = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         step3:SetPoint("TOP", step2, "BOTTOM", 0, -4)
-        step3:SetText("|cFFFFFFFFStep 3:|r After submitting, click 'Close & Purge Data'")
+        step3:SetText("|cFFFFFFFFStep 3:|r After submitting, click 'Purge Collected Data' to clear your local storage")
         step3:SetTextColor(1, 0.8, 0)
         
         -- Scroll frame for data
@@ -1776,7 +1776,7 @@ function QuestieDataCollector:ShowExportWindow(questId)
         purgeButton:SetPoint("BOTTOMRIGHT", -40, 20)
         purgeButton:SetWidth(140)
         purgeButton:SetHeight(25)
-        purgeButton:SetText("Close & Purge Data")
+        purgeButton:SetText("Purge Collected Data")
         purgeButton:SetScript("OnClick", function()
             -- Clear ALL quest data from the saved variable
             _G.QuestieDataCollection = {
@@ -1793,8 +1793,8 @@ function QuestieDataCollector:ShowExportWindow(questId)
                 db.dataCollectionQuests = {}
             end
             
-            DEFAULT_CHAT_FRAME:AddMessage("|cFF00FF00[QUESTIE] Thank you for contributing! All quest data has been purged and saved.|r", 0, 1, 0)
-            DEFAULT_CHAT_FRAME:AddMessage("|cFFFFFF00The data has been cleared. You can safely reload if needed.|r", 1, 1, 0)
+            DEFAULT_CHAT_FRAME:AddMessage("|cFF00FF00[QUESTIE] Thank you for contributing! All collected quest data has been purged.|r", 0, 1, 0)
+            DEFAULT_CHAT_FRAME:AddMessage("|cFFFFFF00Your local quest data storage has been cleared to free up memory.|r", 1, 1, 0)
             f:Hide()
         end)
         

@@ -2,7 +2,7 @@
 ## Title: Questie|cFF00FF00 Project Epoch|r
 ## Author: trav346 (fork of esurm/Questie)
 ## Notes: Quest helper for Project Epoch (WotLK client)
-## Version: 1.0.32
+## Version: 1.0.33
 ## RequiredDeps:
 ## OptionalDeps: Ace3, CallbackHandler-1.0, HereBeDragons, LibDataBroker-1.1, LibDBIcon-1.0, LibSharedMedia-3.0, LibStub, LibUIDropDownMenu
 ## SavedVariables: QuestieConfig, QuestieDataCollection
