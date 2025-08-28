@@ -27,6 +27,8 @@ local QuestieLib = QuestieLoader:ImportModule("QuestieLib")
 local QuestiePlayer = QuestieLoader:ImportModule("QuestiePlayer")
 ---@type TaskQueue
 local TaskQueue = QuestieLoader:ImportModule("TaskQueue")
+---@type QuestieQuestUtils
+local QuestieQuestUtils = QuestieLoader:ImportModule("QuestieQuestUtils")
 ---@type QuestieDB
 local QuestieDB = QuestieLoader:ImportModule("QuestieDB")
 ---@type ZoneDB
@@ -250,38 +252,35 @@ local function _UpdateRuntimeQuestStub(questId, stub)
     local newObjectives = {}
     local foundObjectives = false
     
-    if SelectQuestLogEntry and GetNumQuestLeaderBoards and GetQuestLogLeaderBoard then
-        SelectQuestLogEntry(qli)
-        local numObjectives = GetNumQuestLeaderBoards()
-        if numObjectives and numObjectives > 0 then
-            foundObjectives = true
-            for i = 1, numObjectives do
-                local description, type, finished, numFulfilled, numRequired = GetQuestLogLeaderBoard(i)
-                if description then
-                    newObjectives[i] = {
-                        Id = nil,
-                        Index = i,
-                        questId = questId,
-                        _lastUpdate = 0,
-                        Description = description,
-                        spawnList = {},
-                        AlreadySpawned = {},
-                        isUpdated = true,
-                        Collected = tonumber(numFulfilled) or 0,
-                        Needed = tonumber(numRequired) or 0,
-                        Completed = finished or false,
-                        Coordinates = nil,
-                        RequiredRepValue = nil,
-                    }
-                    -- Assign the Update function to the objective
-                    newObjectives[i].Update = _QuestieQuest.ObjectiveUpdate
-                    -- For runtime stubs, force the objective to update immediately
-                    newObjectives[i].isUpdated = false
-                    newObjectives[i]:Update()
-                    
-                    Questie:Debug(Questie.DEBUG_INFO, "[_UpdateRuntimeQuestStub] Objective", i, "desc:", description, "progress:", numFulfilled, "/", numRequired)
-                end
-            end
+    -- Use the new safe function to get objectives without taint
+    local QuestieQuestUtils = QuestieLoader:ImportModule("QuestieQuestUtils")
+    local safeObjectives = QuestieQuestUtils:GetQuestObjectivesSafe(questId, qli)
+    
+    if safeObjectives and #safeObjectives > 0 then
+        foundObjectives = true
+        for i, objData in ipairs(safeObjectives) do
+            newObjectives[i] = {
+                Id = nil,
+                Index = i,
+                questId = questId,
+                _lastUpdate = 0,
+                Description = objData.description,
+                spawnList = {},
+                AlreadySpawned = {},
+                isUpdated = true,
+                Collected = objData.numFulfilled,
+                Needed = objData.numRequired,
+                Completed = objData.finished,
+                Coordinates = nil,
+                RequiredRepValue = nil,
+            }
+            -- Assign the Update function to the objective
+            newObjectives[i].Update = _QuestieQuest.ObjectiveUpdate
+            -- For runtime stubs, force the objective to update immediately
+            newObjectives[i].isUpdated = false
+            newObjectives[i]:Update()
+            
+            Questie:Debug(Questie.DEBUG_INFO, "[_UpdateRuntimeQuestStub] Objective", i, "desc:", objData.description, "progress:", objData.numFulfilled, "/", objData.numRequired)
         end
     end
     
@@ -1864,6 +1863,27 @@ function _QuestieQuest.ObjectiveUpdate(self)
             self.Description = obj.text
             self.Collected = tonumber(numFulfilled);
             self.Needed = tonumber(numRequired);
+            
+            -- For item objectives, also check actual item count in bags
+            -- This helps with regular items like linen cloth that aren't quest items
+            if self.Type == "item" and self.Id then
+                local GetItemCount = GetItemCount or C_Item and C_Item.GetItemCount
+                if GetItemCount then
+                    local actualCount = GetItemCount(self.Id, nil, true) -- include bank = true
+                    if actualCount and actualCount > 0 then
+                        -- Use the actual item count if it's higher than what the API reports
+                        -- This helps when the quest log hasn't updated yet
+                        if actualCount > self.Collected then
+                            self.Collected = actualCount
+                        end
+                        -- Clamp to needed amount if we have more
+                        if self.Collected > self.Needed and self.Needed > 0 then
+                            self.Collected = self.Needed
+                        end
+                    end
+                end
+            end
+            
             self.Completed = (self.Needed == self.Collected and self.Needed > 0) or (finished and (self.Needed == 0 or (not self.Needed))) -- some objectives get removed on PLAYER_LOGIN because isComplete is set to true at random????
             -- Mark objective updated
             self.isUpdated = true

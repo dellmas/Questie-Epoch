@@ -134,12 +134,23 @@ function TrackerQuestTimers:GetRemainingTimeByQuestId(questId)
     end
 
     if type(questTimers) == "number" then
-        local currentQuestLogSelection = GetQuestLogSelection()
-        SelectQuestLogEntry(questLogIndex)
-        -- We can't use GetQuestTimers because we don't know for which quest the timer is.
-        -- GetQuestLogTimeLeft returns the correct value though.
-        local timeRemaining = GetQuestLogTimeLeft(questLogIndex)
-        SelectQuestLogEntry(currentQuestLogSelection)
+        local currentQuestLogSelection = GetQuestLogSelection and GetQuestLogSelection()
+        local timeRemaining
+        
+        -- Try to get time without selecting if possible
+        if currentQuestLogSelection == questLogIndex then
+            timeRemaining = GetQuestLogTimeLeft and GetQuestLogTimeLeft(questLogIndex)
+        elseif SelectQuestLogEntry then
+            -- Only change selection if necessary
+            SelectQuestLogEntry(questLogIndex)
+            -- We can't use GetQuestTimers because we don't know for which quest the timer is.
+            -- GetQuestLogTimeLeft returns the correct value though.
+            timeRemaining = GetQuestLogTimeLeft and GetQuestLogTimeLeft(questLogIndex)
+            -- Restore original selection
+            if currentQuestLogSelection and currentQuestLogSelection > 0 then
+                SelectQuestLogEntry(currentQuestLogSelection)
+            end
+        end
 
         if timeRemaining ~= nil then
             local timeRemainingString = SecondsToTime(timeRemaining, false, true)

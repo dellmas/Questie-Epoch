@@ -653,5 +653,18 @@ epochQuestData[26502] = {"Rare Books",nil,{{2277}},nil,42,178,nil,nil,nil,{nil,n
 -- Quest from user's current data dump
 epochQuestData[26455] = {"Seeking Redemption",{{45383}},nil,nil,12,178,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
 
+-- Our Bodies Forsaken quest chain
+epochQuestData[26453] = {"Our Bodies Forsaken",{{45077}},nil,nil,12,178,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
+epochQuestData[26456] = {"Our Bodies Forsaken",{{45077}},{{5665}},nil,12,178,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
+epochQuestData[26457] = {"Our Bodies Forsaken",{{5665}},{{5665}},nil,13,178,nil,nil,nil,{nil,nil,{{2589,"Linen Cloth"}}},nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil} -- 10 Linen Cloth
+epochQuestData[26458] = {"Our Bodies Forsaken",{{5665}},{{45077}},nil,13,178,nil,nil,nil,{nil,nil,{{2589,"Linen Cloth"}}},nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil} -- 10 Linen Cloth requirement
+epochQuestData[26459] = {"Our Bodies Forsaken",{{45077}},{{45502}},nil,13,178,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,26460,nil,0,nil,nil,nil,nil,nil,nil} -- Turn in to Jake Hartstolen, nextQuestInChain: 26460
+epochQuestData[26460] = {"Our Bodies Forsaken",{{45502}},{{45502}},nil,13,178,2,nil,nil,{nil,nil,nil,nil,nil,{{62271,"Save Rance Hartstolen"}}},62271,{26459},nil,nil,nil,nil,85,nil,nil,nil,nil,26461,nil,0,nil,nil,nil,nil,nil,nil} -- Paladin only, Jake Hartstolen quest giver, nextQuestInChain: 26461
+epochQuestData[26461] = {"Our Bodies Forsaken",{{45501}},{{45242}},nil,13,178,nil,nil,nil,{{{1537},{1538}}},nil,{26460},nil,nil,nil,nil,85,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil} -- Kill 3 Zealots and 3 Friars
+
+-- Incomplete data quests (need to be re-accepted for full data)
+epochQuestData[26926] = {"A Box of Relics",nil,nil,nil,9,178,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
+epochQuestData[26941] = {"Scarlet Intelligence",nil,nil,nil,9,178,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
+
 -- Stage the Epoch questData for later merge during compilation
 QuestieDB._epochQuestData = epochQuestData

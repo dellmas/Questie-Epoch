@@ -221,6 +221,25 @@ function QuestieDataCollector:RegisterEvents()
         end
     end)
     
+    -- Hook using items (for quest items used on NPCs)
+    if UseContainerItem then
+        hooksecurefunc("UseContainerItem", function(bag, slot)
+            -- When a quest item is used, check if we have a target
+            if UnitExists("target") and not UnitIsPlayer("target") then
+                QuestieDataCollector:TrackMob("target")
+                
+                -- Also track as potential quest item target
+                local itemLink = GetContainerItemLink(bag, slot)
+                if itemLink then
+                    local itemId = tonumber(string.match(itemLink, "item:(%d+)"))
+                    if itemId then
+                        QuestieDataCollector:TrackQuestItemUsage(itemId, "target")
+                    end
+                end
+            end
+        end)
+    end
+    
     -- Hook tooltip functions to capture IDs
     QuestieDataCollector:SetupTooltipHooks()
     
@@ -463,13 +482,56 @@ function QuestieDataCollector:GetQuestIdFromLogIndex(index)
     return nil
 end
 
+function QuestieDataCollector:TrackQuestItemUsage(itemId, unit)
+    if not UnitExists(unit) or UnitIsPlayer(unit) then return end
+    
+    local name = UnitName(unit)
+    local guid = UnitGUID(unit)
+    
+    if guid then
+        local npcId = tonumber(guid:sub(6, 12), 16)
+        if npcId then
+            local coords = QuestieDataCollector:GetPlayerCoords()
+            
+            -- Check all active quests for this item
+            for questId, questData in pairs(QuestieDataCollection.quests or {}) do
+                if _activeTracking[questId] then
+                    -- Check if this quest uses this item
+                    local usesItem = false
+                    
+                    -- Check objectives for spell/item usage objectives
+                    for _, objective in ipairs(questData.objectives or {}) do
+                        if objective.type == "spell" or objective.type == "event" or string.find(string.lower(objective.text or ""), "use") then
+                            usesItem = true
+                            
+                            -- Store the target NPC for this objective
+                            objective.targetNPCs = objective.targetNPCs or {}
+                            table.insert(objective.targetNPCs, {
+                                npcId = npcId,
+                                name = name,
+                                coords = coords,
+                                zone = GetRealZoneText(),
+                                subzone = GetSubZoneText(),
+                                itemUsed = itemId
+                            })
+                            
+                            DEFAULT_CHAT_FRAME:AddMessage("|cFF00FF00[DATA] Tracked quest item " .. itemId .. " used on " .. name .. " (ID: " .. npcId .. ") at " .. coords.x .. ", " .. coords.y .. "|r", 0, 1, 0)
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
+
 function QuestieDataCollector:TrackMob(unit)
     if not UnitExists(unit) or UnitIsPlayer(unit) then return end
     
     local name = UnitName(unit)
     local guid = UnitGUID(unit)
     
-    if guid and UnitCanAttack("player", unit) then
+    -- Track both hostile mobs AND any NPC (for quest item targets, friendly NPCs, etc.)
+    if guid then
         -- Extract NPC ID using same method as quest givers
         local npcId = tonumber(guid:sub(6, 12), 16)
         

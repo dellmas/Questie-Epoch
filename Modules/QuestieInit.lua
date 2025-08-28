@@ -312,6 +312,10 @@ QuestieInit.Stages[3] = function() -- run as a coroutine
     QuestieMap:InitializeQueue()
 
     coYield()
+    -- Initialize QuestieQuestUtils before QuestieQuest
+    QuestieQuestUtils = QuestieLoader:ImportModule("QuestieQuestUtils")
+    QuestieQuestUtils:Initialize()
+    coYield()
     QuestieQuest:Initialize()
     coYield()
     WorldMapButton.Initialize()
@@ -423,55 +427,63 @@ function QuestieInit:LoadBaseDB()
     
     -- After base DB tables are loaded (converted from strings), merge Epoch supplemental data if present
     if QuestieDB._epochQuestData and type(QuestieDB.questData) == "table" then
-        local added, skipped = 0, 0
+        local added, overwritten = 0, 0
         for id, data in pairs(QuestieDB._epochQuestData) do
             if QuestieDB.questData[id] == nil then
                 QuestieDB.questData[id] = data
                 added = added + 1
             else
-                skipped = skipped + 1
+                -- For Project Epoch, prefer Epoch data over Classic data
+                QuestieDB.questData[id] = data
+                overwritten = overwritten + 1
             end
         end
-        print("Questie Epoch: merged "..added.." quests ("..skipped.." collisions)")
+        print("Questie Epoch: merged "..added.." quests ("..overwritten.." overwritten)")
         QuestieDB._epochQuestData = nil
     end
     if QuestieDB._epochNpcData and type(QuestieDB.npcData) == "table" then
-        local added, skipped = 0, 0
+        local added, overwritten = 0, 0
         for id, data in pairs(QuestieDB._epochNpcData) do
             if QuestieDB.npcData[id] == nil then
                 QuestieDB.npcData[id] = data
                 added = added + 1
             else
-                skipped = skipped + 1
+                -- For Project Epoch, prefer Epoch data over Classic data
+                QuestieDB.npcData[id] = data
+                overwritten = overwritten + 1
             end
         end
-        print("Questie Epoch: merged "..added.." NPCs ("..skipped.." collisions)")
+        print("Questie Epoch: merged "..added.." NPCs ("..overwritten.." overwritten)")
         QuestieDB._epochNpcData = nil
     end
     if QuestieDB._epochObjectData and type(QuestieDB.objectData) == "table" then
-        local added, skipped = 0, 0
+        local added, overwritten = 0, 0
         for id, data in pairs(QuestieDB._epochObjectData) do
             if QuestieDB.objectData[id] == nil then
                 QuestieDB.objectData[id] = data
                 added = added + 1
             else
-                skipped = skipped + 1
+                -- For Project Epoch, prefer Epoch data over Classic data
+                QuestieDB.objectData[id] = data
+                overwritten = overwritten + 1
             end
         end
-        print("Questie Epoch: merged "..added.." objects ("..skipped.." collisions)")
+        print("Questie Epoch: merged "..added.." objects ("..overwritten.." overwritten)")
         QuestieDB._epochObjectData = nil
     end
     if QuestieDB._epochItemData and type(QuestieDB.itemData) == "table" then
-        local added, skipped = 0, 0
+        local added, overwritten = 0, 0
         for id, data in pairs(QuestieDB._epochItemData) do
             if QuestieDB.itemData[id] == nil then
                 QuestieDB.itemData[id] = data
                 added = added + 1
             else
-                skipped = skipped + 1
+                -- For Project Epoch, prefer Epoch data over Classic data
+                QuestieDB.itemData[id] = data
+                overwritten = overwritten + 1
             end
         end
-        print("Questie Epoch: merged "..added.." items ("..skipped.." collisions)")
+        print("Questie Epoch: merged "..added.." items ("..overwritten.." overwritten)")
         QuestieDB._epochItemData = nil
     end
 end

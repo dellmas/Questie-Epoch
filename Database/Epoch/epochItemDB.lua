@@ -305,6 +305,7 @@ local epochItemData = {
 [67288] = {"Spinescale's Head",{46352},nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,{27509}},
 [62620] = {"Eston's Key",nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,{26796}},
 [62648] = {"Zygor's Head",nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,{26824}},
+[62271] = {"Symbol of Life",nil,nil,nil,nil,{26460},nil,nil,nil,13,13,nil,nil,nil}, -- Paladin quest item
 }
 
 -- Stage the Epoch itemData for later merge during compilation
