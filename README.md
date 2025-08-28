@@ -1,5 +1,3 @@
- Questie for Project Epoch - Version 1.0.42 Release
-
  💡 Known Issues
 
   - Some Epoch quests still have placeholder data - please use /qdc enable to help collect data
