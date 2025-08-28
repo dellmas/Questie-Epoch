@@ -84,7 +84,7 @@ function QuestieTracker.Initialize()
     if QuestieTracker.started then
         -- The Tracker was already initialized, so we don't need to do it again.
         Questie:Debug(Questie.DEBUG_CRITICAL, "[QuestieTracker] Already initialized, skipping")
-        Questie:Print("[QuestieTracker] Already initialized")
+        -- Questie:Print("[QuestieTracker] Already initialized") -- Removed to reduce login spam
         return
     end
     
@@ -95,7 +95,7 @@ function QuestieTracker.Initialize()
         return
     end
     
-    Questie:Print("[QuestieTracker] Starting initialization...")
+    -- Questie:Print("[QuestieTracker] Starting initialization...") -- Removed to reduce login spam
     Questie:Debug(Questie.DEBUG_CRITICAL, "[QuestieTracker] Starting initialization")
 
     -- These values might also be accessed by other modules, so we need to make sure they exist. Even when the Tracker is disabled
@@ -141,7 +141,7 @@ function QuestieTracker.Initialize()
         return
     end
     
-    Questie:Print("[QuestieTracker] Tracker enabled, initializing frames...")
+    -- Questie:Print("[QuestieTracker] Tracker enabled, initializing frames...") -- Removed to reduce login spam
     Questie:Debug(Questie.DEBUG_CRITICAL, "[QuestieTracker] Tracker enabled, continuing initialization")
 
     -- Initialize tracker frames with error handling
@@ -154,7 +154,7 @@ function QuestieTracker.Initialize()
         Questie:Print("|cFFFF0000[QuestieTracker] ERROR: Failed to initialize base frame: " .. tostring(err) .. "|r")
         return
     end
-    Questie:Print("[QuestieTracker] Base frame initialized")
+    -- Questie:Print("[QuestieTracker] Base frame initialized") -- Removed to reduce login spam
     
     success, err = pcall(function()
         trackerHeaderFrame = TrackerHeaderFrame.Initialize(trackerBaseFrame)
@@ -163,7 +163,7 @@ function QuestieTracker.Initialize()
         Questie:Print("|cFFFF0000[QuestieTracker] ERROR: Failed to initialize header frame: " .. tostring(err) .. "|r")
         return
     end
-    Questie:Print("[QuestieTracker] Header frame initialized")
+    -- Questie:Print("[QuestieTracker] Header frame initialized") -- Removed to reduce login spam
     
     success, err = pcall(function()
         trackerQuestFrame = TrackerQuestFrame.Initialize(trackerBaseFrame, trackerHeaderFrame)
@@ -172,14 +172,14 @@ function QuestieTracker.Initialize()
         Questie:Print("|cFFFF0000[QuestieTracker] ERROR: Failed to initialize quest frame: " .. tostring(err) .. "|r")
         return
     end
-    Questie:Print("[QuestieTracker] Quest frame initialized")
+    -- Questie:Print("[QuestieTracker] Quest frame initialized") -- Removed to reduce login spam
 
     -- Initialize tracker functions
     TrackerLinePool.Initialize(trackerQuestFrame)
     TrackerFadeTicker.Initialize(trackerBaseFrame, trackerHeaderFrame)
     QuestieTracker.started = true
     
-    Questie:Print("|cFF00FF00[QuestieTracker] Initialization complete! Tracker started successfully.|r")
+    -- Questie:Print("|cFF00FF00[QuestieTracker] Initialization complete! Tracker started successfully.|r") -- Removed to reduce login spam
     Questie:Debug(Questie.DEBUG_CRITICAL, "[QuestieTracker] Initialization complete, tracker started")
 
     -- Initialize hooks
