@@ -720,7 +720,15 @@ function TrackerUtils:GetSortedQuestIds()
             questDetails[quest.Id or questId].quest = quest
             questDetails[quest.Id or questId].zoneName = _GetZoneName(quest.zoneOrSort, quest.Id or questId)
 
-            if quest:IsComplete() == 1 or (not next(quest.Objectives)) then
+            -- Check if quest has IsComplete method (defensive check for malformed quests)
+            local isComplete = 0
+            if quest.IsComplete and type(quest.IsComplete) == "function" then
+                isComplete = quest:IsComplete()
+            elseif quest.isComplete ~= nil then
+                isComplete = quest.isComplete and 1 or 0
+            end
+            
+            if isComplete == 1 or (not quest.Objectives) or (not next(quest.Objectives)) then
                 questDetails[quest.Id or questId].questCompletePercent = 1
             else
                 local percent = 0
@@ -789,7 +797,16 @@ function TrackerUtils:GetSortedQuestIds()
 
             -- Sort by Zone then by Level to mimic QuestLog sorting
             if qAZone == qBZone then
-                return qA.level < qB.level
+                -- Defensive check for nil levels
+                if qA.level and qB.level then
+                    return qA.level < qB.level
+                elseif qA.level then
+                    return true  -- qA has level, qB doesn't, qA goes first
+                elseif qB.level then
+                    return false  -- qB has level, qA doesn't, qB goes first
+                else
+                    return false  -- Both nil, maintain order
+                end
             else
                 if qAZone ~= nil and qBZone ~= nil then
                     return qAZone < qBZone
