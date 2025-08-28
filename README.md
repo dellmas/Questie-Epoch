@@ -1,5 +1,12 @@
  Questie for Project Epoch - Version 1.0.29 Release
 
+ 💡 Known Issues
+
+  - Some Epoch quests still have placeholder data - please use /qdc enable to help collect data
+  - Map icons may not appear for quests with incomplete NPC/object data
+  - I've discovered Project Epoch has modified numerous existing vanilla quests with, for example, making them cross faction when originally the were faction exlusive. This is causing major conflicts for the original Questie database from vanilla->wrath, so some quests may behave oddly, but the quest data collection system should still capture relevant info and warn you if you've accepted a quest not in the database.
+  
+
   🎉 Major Improvements
 
   Quest Tracker Reliability
@@ -95,10 +102,6 @@
   - Fixed quest prefixes showing incorrectly ([Epoch] vs [Missing])
   - Fixed tracker initialization errors with corrupted saved data
 
-  💡 Known Issues
-
-  - Some Epoch quests still have placeholder data - please use /qdc enable to help collect data
-  - Map icons may not appear for quests with incomplete NPC/object data
 
   🙏 Contributors
 
