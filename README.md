@@ -4,6 +4,10 @@
   - Map icons may not appear for quests with incomplete NPC/object data
   - I've discovered Project Epoch has modified numerous existing vanilla quests with, for example, making them cross faction when originally the were faction exlusive. This is causing major conflicts for the original Questie database from vanilla->wrath, so some quests may behave oddly, but the quest data collection system should still capture relevant info and warn you if you've accepted a quest not in the database.
   
+v1.0.53
+New feature!
+
+ -Auto Waypoint has been added thanks to @fing3rguns. To enable, /questie -> Tracker -> tick box for Auto Waypoint in Tom Tom section. (must have Tom Tom installed and enabled)
 
   🎉 Major Improvements
 
