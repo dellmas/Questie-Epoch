@@ -1086,8 +1086,13 @@ function QuestieDataCollector:OnLootOpened()
             lootSourceId = tonumber(guid:sub(6, 12), 16)
         end
         
-        DEFAULT_CHAT_FRAME:AddMessage("|cFFAA8800[DATA] Looting mob: " .. lootSourceName .. 
-            " (ID: " .. (lootSourceId or "unknown") .. ") at [" .. coords.x .. ", " .. coords.y .. "]|r", 0.67, 0.53, 0)
+        if coords and coords.x and coords.y then
+            DEFAULT_CHAT_FRAME:AddMessage("|cFFAA8800[DATA] Looting mob: " .. lootSourceName .. 
+                " (ID: " .. (lootSourceId or "unknown") .. ") at [" .. coords.x .. ", " .. coords.y .. "]|r", 0.67, 0.53, 0)
+        else
+            DEFAULT_CHAT_FRAME:AddMessage("|cFFAA8800[DATA] Looting mob: " .. lootSourceName .. 
+                " (ID: " .. (lootSourceId or "unknown") .. ") - location unknown|r", 0.67, 0.53, 0)
+        end
     else
         -- This is likely an object interaction
         lootSourceType = "object"
@@ -1102,8 +1107,13 @@ function QuestieDataCollector:OnLootOpened()
             lootSourceName = "Unknown Object"
         end
         
-        DEFAULT_CHAT_FRAME:AddMessage("|cFF8888FF[DATA] Looting object: " .. lootSourceName .. 
-            " at [" .. coords.x .. ", " .. coords.y .. "]|r", 0.5, 0.5, 1)
+        if coords and coords.x and coords.y then
+            DEFAULT_CHAT_FRAME:AddMessage("|cFF8888FF[DATA] Looting object: " .. lootSourceName .. 
+                " at [" .. coords.x .. ", " .. coords.y .. "]|r", 0.5, 0.5, 1)
+        else
+            DEFAULT_CHAT_FRAME:AddMessage("|cFF8888FF[DATA] Looting object: " .. lootSourceName .. 
+                " - location unknown|r", 0.5, 0.5, 1)
+        end
         
         -- Store object data in any active quest that might use this object
         local activeCount = 0
@@ -1132,16 +1142,18 @@ function QuestieDataCollector:OnLootOpened()
                     end
                     
                     -- Add this location if not already tracked
-                    local locKey = string.format("%.1f,%.1f", coords.x, coords.y)
-                    if not questData.objects[lootSourceName].locations[locKey] then
-                        questData.objects[lootSourceName].locations[locKey] = {
-                            coords = coords,
-                            zone = zone,
-                            subzone = subzone,
-                            timestamp = time()
-                        }
-                        DEFAULT_CHAT_FRAME:AddMessage("|cFF00FFFF[DATA] Tracked object '" .. lootSourceName .. 
-                            "' for quest " .. questId .. " at [" .. coords.x .. ", " .. coords.y .. "]|r", 0, 1, 1)
+                    if coords and coords.x and coords.y then
+                        local locKey = string.format("%.1f,%.1f", coords.x, coords.y)
+                        if not questData.objects[lootSourceName].locations[locKey] then
+                            questData.objects[lootSourceName].locations[locKey] = {
+                                coords = coords,
+                                zone = zone,
+                                subzone = subzone,
+                                timestamp = time()
+                            }
+                            DEFAULT_CHAT_FRAME:AddMessage("|cFF00FFFF[DATA] Tracked object '" .. lootSourceName .. 
+                                "' for quest " .. questId .. " at [" .. coords.x .. ", " .. coords.y .. "]|r", 0, 1, 1)
+                        end
                     end
                 end
             end
