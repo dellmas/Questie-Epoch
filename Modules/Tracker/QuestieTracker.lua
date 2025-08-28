@@ -1938,7 +1938,8 @@ function QuestieTracker:Update()
 
     -- First run clean up
     if isFirstRun then
-        trackerBaseFrame:Hide()
+        -- Don't hide the tracker on first run - let it show immediately
+        -- trackerBaseFrame:Hide() -- Removed to fix empty tracker on new characters
         for questId, quest in pairs(QuestiePlayer.currentQuestlog) do
             if quest then
                 if Questie.db.char.TrackerHiddenQuests[questId] then
@@ -1971,9 +1972,11 @@ function QuestieTracker:Update()
             end
         end
         isFirstRun = false
+        -- Allow immediate formatting for new characters
+        allowFormattingUpdate = true
+        -- Still queue a delayed update for safety, but tracker should work immediately
         C_Timer.After(1.0, function()
             QuestieCombatQueue:Queue(function()
-                allowFormattingUpdate = true
                 QuestieTracker:Update()
             end)
         end)
