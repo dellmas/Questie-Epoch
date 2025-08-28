@@ -7,7 +7,7 @@
 v1.0.53
 New feature!
 
- -Auto Waypoint has been added thanks to @fingerguns. To enable, /questie -> Tracker -> tick box for Auto Waypoint in Tom Tom section. (must have Tom Tom installed and enabled)
+ -Auto Waypoint has been added thanks to @fing3rguns. To enable, /questie -> Tracker -> tick box for Auto Waypoint in Tom Tom section. (must have Tom Tom installed and enabled)
 
   🎉 Major Improvements
 
