@@ -681,42 +681,77 @@ function QuestieTracker:QuestItemLooted(text)
 end
 
 function QuestieTracker:HasQuest()
-    local hasQuest
-
-    if (GetNumQuestWatches(true) == 0) then
-        if Questie.IsWotlk or QuestieCompat.Is335 then
-            if (GetNumTrackedAchievements(true) == 0) then
-                hasQuest = false
-            else
+    local hasQuest = false
+    
+    -- Check if we have any tracked quests in our actual tracking lists
+    -- This is more reliable than GetNumQuestWatches which may not be updated yet
+    if Questie.db.profile.autoTrackQuests then
+        -- In auto-track mode, check if we have quests that aren't untracked
+        for questId in pairs(QuestiePlayer.currentQuestlog or {}) do
+            if not (Questie.db.char.AutoUntrackedQuests and Questie.db.char.AutoUntrackedQuests[questId]) then
                 hasQuest = true
+                break
             end
-        else
-            hasQuest = false
         end
     else
-        if not Questie.db.profile.trackerShowCompleteQuests then
-            local completedQuests = 0
-            -- Keep track of the number of completed quests
-            for questId, quest in pairs(QuestiePlayer.currentQuestlog) do
-                if not quest then break end
-                if quest:IsComplete() == 1 then
-                    completedQuests = completedQuests + 1
+        -- In manual tracking mode, check if we have any tracked quests
+        if Questie.db.char.TrackedQuests then
+            for questId in pairs(Questie.db.char.TrackedQuests) do
+                if QuestiePlayer.currentQuestlog[questId] then
+                    hasQuest = true
+                    break
                 end
             end
-
-            -- This hides the Tracker when all tracked Quests are complete
-            if completedQuests == GetNumQuestWatches(true) then
-                hasQuest = false
-            else
+        end
+    end
+    
+    -- If we still haven't found a quest, fall back to the old method
+    if not hasQuest then
+        if (GetNumQuestWatches(true) > 0) then
+            hasQuest = true
+        elseif Questie.IsWotlk or QuestieCompat.Is335 then
+            if (GetNumTrackedAchievements(true) > 0) then
                 hasQuest = true
             end
-        else
-            hasQuest = true
         end
+    end
+    
+    -- Handle completed quests visibility
+    if hasQuest and not Questie.db.profile.trackerShowCompleteQuests then
+        local hasIncompleteQuest = false
+        if Questie.db.profile.autoTrackQuests then
+            for questId, quest in pairs(QuestiePlayer.currentQuestlog or {}) do
+                if not (Questie.db.char.AutoUntrackedQuests and Questie.db.char.AutoUntrackedQuests[questId]) then
+                    if quest and quest.IsComplete and quest:IsComplete() ~= 1 then
+                        hasIncompleteQuest = true
+                        break
+                    end
+                end
+            end
+        else
+            for questId in pairs(Questie.db.char.TrackedQuests or {}) do
+                local quest = QuestiePlayer.currentQuestlog[questId]
+                if quest and quest.IsComplete and quest:IsComplete() ~= 1 then
+                    hasIncompleteQuest = true
+                    break
+                end
+            end
+        end
+        hasQuest = hasIncompleteQuest
     end
 
     Questie:Debug(Questie.DEBUG_SPAM, "[QuestieTracker:HasQuest] - ", hasQuest)
     return hasQuest
+end
+
+function QuestieTracker:ForceShow()
+    -- Force the tracker to show when we know we have quests
+    if trackerBaseFrame and not trackerBaseFrame:IsShown() then
+        if QuestieTracker:HasQuest() then
+            trackerBaseFrame:Show()
+            Questie:Debug(Questie.DEBUG_INFO, "[QuestieTracker] Force showing tracker")
+        end
+    end
 end
 
 function QuestieTracker:Enable()

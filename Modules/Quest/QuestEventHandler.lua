@@ -483,8 +483,8 @@ function _QuestEventHandler:HandleQuestAccepted(questId)
         QuestieQuest:SmoothReset()
     else
         QuestieQuest:AcceptQuest(questId)
-        -- Single tracker update for all quest types to avoid redundancy
-        -- Call immediately to ensure tracker shows when accepting quest after having 0 quests
+        -- Force tracker to show immediately when accepting a quest
+        QuestieTracker:ForceShow()
         QuestieTracker:Update()
         -- Also queue for combat safety
         QuestieCombatQueue:Queue(function()

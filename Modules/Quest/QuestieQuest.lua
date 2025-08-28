@@ -695,6 +695,18 @@ function QuestieQuest:AcceptQuest(questId)
             Questie:Debug(Questie.DEBUG_INFO, "[QuestieQuest] Accepted Quest:", questId)
 
             QuestiePlayer.currentQuestlog[questId] = quest
+            
+            -- Clear auto-untracked status IMMEDIATELY when accepting a quest
+            -- This needs to happen before tracker update, not in TaskQueue
+            if Questie.db.char.AutoUntrackedQuests and Questie.db.char.AutoUntrackedQuests[questId] then
+                Questie.db.char.AutoUntrackedQuests[questId] = nil
+                Questie:Debug(Questie.DEBUG_INFO, "[QuestieQuest] Removed quest from AutoUntrackedQuests:", questId)
+            end
+            
+            -- Re-accepted quest can be collapsed. Expand it immediately.
+            if Questie.db.char.collapsedQuests and Questie.db.char.collapsedQuests[questId] then
+                Questie.db.char.collapsedQuests[questId] = nil
+            end
 
             if allianceTournamentMarkerQuests[questId] then
                 Questie.db.char.complete[13686] = true -- Alliance Tournament Eligibility Marker
@@ -707,16 +719,6 @@ function QuestieQuest:AcceptQuest(questId)
                 function() QuestieMap:UnloadQuestFrames(questId) end,
                 -- Make sure there isn't any lingering tooltip data hanging around in the quest table.
                 function() QuestieTooltips:RemoveQuest(questId) end,
-                function()
-                    -- Re-accepted quest can be collapsed. Expand it. Especially dailies.
-                    if Questie.db.char.collapsedQuests then
-                        Questie.db.char.collapsedQuests[questId] = nil
-                    end
-                    -- Re-accepted quest can be untracked. Clear it. Especially timed quests.
-                    if Questie.db.char.AutoUntrackedQuests[questId] then
-                        Questie.db.char.AutoUntrackedQuests[questId] = nil
-                    end
-                end,
                 function() QuestieQuest:PopulateQuestLogInfo(quest) end,
                 function()
                     -- This needs to happen after QuestieQuest:PopulateQuestLogInfo because that is the place where quest.Objectives is generated
