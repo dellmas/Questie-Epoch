@@ -484,6 +484,9 @@ function _QuestEventHandler:HandleQuestAccepted(questId)
     else
         QuestieQuest:AcceptQuest(questId)
         -- Single tracker update for all quest types to avoid redundancy
+        -- Call immediately to ensure tracker shows when accepting quest after having 0 quests
+        QuestieTracker:Update()
+        -- Also queue for combat safety
         QuestieCombatQueue:Queue(function()
             QuestieTracker:Update()
         end)
