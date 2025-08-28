@@ -618,10 +618,10 @@ epochQuestData[1288] = {"Vimes's Report",nil,nil,nil,38,nil,nil,nil,nil,nil,nil,
 epochQuestData[11143] = {"A Grim Connection",nil,nil,nil,38,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
 epochQuestData[11160] = {"Banner of the Stonemaul",nil,nil,nil,39,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
 epochQuestData[11161] = {"The Essence of Enmity",nil,nil,nil,39,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
-epochQuestData[26499] = {"[Epoch] Magical Materiel",nil,nil,nil,35,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
+epochQuestData[26499] = {"Magical Materiel",nil,nil,nil,35,178,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
 epochQuestData[26506] = {"[Epoch] The Strahnbrad Courier",nil,nil,nil,36,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
-epochQuestData[26538] = {"[Epoch] The Barony Mordis",nil,nil,nil,40,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
-epochQuestData[26543] = {"[Epoch] Watermelon Punch",nil,nil,nil,40,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
+epochQuestData[26538] = {"The Barony Mordis",nil,nil,nil,40,178,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
+epochQuestData[26543] = {"Watermelon Punch",nil,nil,nil,40,178,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
 epochQuestData[26907] = {"Wild Tulip",nil,nil,nil,41,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
 epochQuestData[27503] = {"Why Oh Wyvern",nil,nil,nil,28,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
 
@@ -638,6 +638,9 @@ epochQuestData[26366] = {"Call to Skirmish: Hillsbrad Foothills",nil,nil,nil,24,
 epochQuestData[26795] = {"A Lost Warrior",nil,{{45799}},nil,24,178,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,267,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
 epochQuestData[26796] = {"A Lost Warrior",nil,{{3447}},nil,24,178,nil,nil,nil,{nil,nil,{{62620,nil}}},62620,nil,{26795},nil,nil,nil,1638,nil,nil,nil,nil,nil,8,0,nil,nil,nil,nil,nil,nil}
 epochQuestData[26824] = {"WANTED: Archmage Zygor",nil,nil,nil,25,178,nil,nil,nil,{nil,nil,{{62648,nil}}},nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,8,0,nil,nil,nil,nil,nil,nil}
+
+-- Missing quest from user's quest dump
+epochQuestData[26941] = {"Scarlet Intelligence",{{1746}},nil,nil,9,178,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
 
 -- Stage the Epoch questData for later merge during compilation
 QuestieDB._epochQuestData = epochQuestData

@@ -1762,11 +1762,20 @@ function QuestieDataCollector:ShowExportWindow(questId)
             -- Clear ALL quest data from the saved variable
             _G.QuestieDataCollection = {
                 quests = {},
-                enableDataCollection = QuestieDataCollection.enableDataCollection
+                enableDataCollection = QuestieDataCollection and QuestieDataCollection.enableDataCollection or false
             }
+            -- Also clear the local reference
             QuestieDataCollection = _G.QuestieDataCollection
-            DEFAULT_CHAT_FRAME:AddMessage("|cFF00FF00[QUESTIE] Thank you for contributing! All quest data has been purged.|r", 0, 1, 0)
-            DEFAULT_CHAT_FRAME:AddMessage("|cFFFFFF00You should /reload now to save the cleared state.|r", 1, 1, 0)
+            
+            -- Force the cleared state to be saved immediately
+            -- This ensures the empty state persists after reload
+            local db = Questie.db.global
+            if db then
+                db.dataCollectionQuests = {}
+            end
+            
+            DEFAULT_CHAT_FRAME:AddMessage("|cFF00FF00[QUESTIE] Thank you for contributing! All quest data has been purged and saved.|r", 0, 1, 0)
+            DEFAULT_CHAT_FRAME:AddMessage("|cFFFFFF00The data has been cleared. You can safely reload if needed.|r", 1, 1, 0)
             f:Hide()
         end)
         
