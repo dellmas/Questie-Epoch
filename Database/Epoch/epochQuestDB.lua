@@ -626,11 +626,18 @@ epochQuestData[26907] = {"Wild Tulip",nil,nil,nil,41,nil,nil,nil,nil,nil,nil,nil
 epochQuestData[27503] = {"Why Oh Wyvern",nil,nil,nil,28,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
 
 -- Missing quests from issue #1 user dump (added to fix tracker loading)
-epochQuestData[26804] = {"Burnt to a Crisp",nil,nil,nil,24,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
-epochQuestData[26827] = {"Durnholde Extermination",nil,nil,nil,24,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
+epochQuestData[26804] = {"Burnt to a Crisp",nil,nil,nil,24,178,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
+epochQuestData[26827] = {"Durnholde Extermination",nil,nil,nil,24,178,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
 epochQuestData[27400] = {"Mirkfallon Bracers",nil,nil,nil,23,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
 epochQuestData[27409] = {"Twilight Fangs",nil,nil,nil,24,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
 epochQuestData[27397] = {"A Trip to the Vale",nil,nil,nil,27,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
+
+-- Missing quests from issue #4 GitHub submission
+epochQuestData[26364] = {"Call to Skirmish: Ashenvale",nil,nil,nil,24,178,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,331,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
+epochQuestData[26366] = {"Call to Skirmish: Hillsbrad Foothills",nil,nil,nil,24,178,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,267,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
+epochQuestData[26795] = {"A Lost Warrior",nil,{{45799}},nil,24,178,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,267,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
+epochQuestData[26796] = {"A Lost Warrior",nil,{{3447}},nil,24,178,nil,nil,nil,{nil,nil,{{62620,nil}}},62620,nil,{26795},nil,nil,nil,1638,nil,nil,nil,nil,nil,8,0,nil,nil,nil,nil,nil,nil}
+epochQuestData[26824] = {"WANTED: Archmage Zygor",nil,nil,nil,25,178,nil,nil,nil,{nil,nil,{{62648,nil}}},nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,8,0,nil,nil,nil,nil,nil,nil}
 
 -- Stage the Epoch questData for later merge during compilation
 QuestieDB._epochQuestData = epochQuestData

@@ -303,6 +303,8 @@ local epochItemData = {
 [63503] = {"Misty Core",{46904},nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,{26655}},
 [63504] = {"Ember Worg Pelt",{9694,9690},nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,{26656}},
 [67288] = {"Spinescale's Head",{46352},nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,{27509}},
+[62620] = {"Eston's Key",nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,{26796}},
+[62648] = {"Zygor's Head",nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,{26824}},
 }
 
 -- Stage the Epoch itemData for later merge during compilation

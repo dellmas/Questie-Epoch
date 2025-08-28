@@ -780,6 +780,7 @@ local epochNpcData = {
 [46903] = {"Jason Tinling",2400,2700,60,60,0,{[46]={{68.6,49.9}}},nil,46,{26654,26655,26656},{26654,26655,26656},35,"AH",nil,0},
 [46904] = {"Everstill Lurker",2120,2385,53,53,0,{[44]={{57.4,56.5}}},nil,44,nil,nil,nil,nil,nil,0},
 [1521] = {"Gretchen Dedmar",nil,nil,9,9,0,{[85]={{61.8,52.6}}},nil,85,nil,{26936},nil,nil,nil,0},
+[45799] = {"Tog'thar",nil,nil,24,24,0,{[267]={{81.4,36.8}}},nil,267,{26795},nil,nil,nil,nil,0},
 }
 
 -- Stage the Epoch npcData for later merge during compilation
