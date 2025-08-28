@@ -1,4 +1,3 @@
--- AUTO GENERATED FILE! DO NOT EDIT!
 
 ---@type QuestieDB
 local QuestieDB = QuestieLoader:ImportModule("QuestieDB");

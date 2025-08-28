@@ -1,4 +1,3 @@
--- AUTO GENERATED FILE! DO NOT EDIT!
 ---@class QuestieClassicQuestReputationFixes
 local QuestieClassicQuestReputationFixes = QuestieLoader:CreateModule("QuestieClassicQuestReputationFixes")
 
