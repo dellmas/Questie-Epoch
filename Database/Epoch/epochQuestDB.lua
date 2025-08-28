@@ -666,5 +666,15 @@ epochQuestData[26461] = {"Our Bodies Forsaken",{{45501}},{{45242}},nil,13,178,ni
 epochQuestData[26926] = {"A Box of Relics",nil,nil,nil,9,178,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
 epochQuestData[26941] = {"Scarlet Intelligence",nil,nil,nil,9,178,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,85,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
 
+-- Missing quests from issue #14 (Searing Gorge and Badlands)
+epochQuestData[26854] = {"Twilight Tactics",nil,nil,nil,45,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
+epochQuestData[26855] = {"Twilight Tactics",nil,nil,nil,45,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
+epochQuestData[26856] = {"Twilight Tactics",nil,nil,nil,45,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
+epochQuestData[26859] = {"The Elements, Corrupted",nil,nil,nil,47,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
+epochQuestData[26860] = {"The Grimesilt Digsite",nil,nil,nil,44,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
+epochQuestData[26862] = {"The Shadowforge Librarian",nil,nil,nil,45,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
+epochQuestData[26864] = {"Do Slavers Keep Records?",nil,nil,nil,45,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
+epochQuestData[26868] = {"Grampy Stoutforge",nil,nil,nil,45,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,nil,nil,nil,nil,nil,nil}
+
 -- Stage the Epoch questData for later merge during compilation
 QuestieDB._epochQuestData = epochQuestData
