@@ -10,6 +10,7 @@ Thumbs.db
 # Documentation files we don't want
 *.md
 !README.md
+!API_IMPROVEMENTS_TODO.md
 CLAUDE.md
 CURRENT_WORK_STATUS.md
 EPOCH_QUEST_TRACKER.md
