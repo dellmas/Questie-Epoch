@@ -1264,7 +1264,7 @@ function QuestieDB.GetQuest(questId) -- /dump QuestieDB.GetQuest(867)
                     nil, -- [8] objectivesText
                     nil, -- [9] triggerEnd
                     nil, -- [10] objectives
-                    nil, -- [11] sourceItemId
+                    0,   -- [11] sourceItemId (0 = no source item)
                     nil, -- [12] preQuestGroup
                     nil, -- [13] preQuestSingle
                     nil, -- [14] childQuests
