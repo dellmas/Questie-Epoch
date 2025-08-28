@@ -651,7 +651,7 @@ local epochNpcData = {
 [45885] = {"Jasper Greene",nil,nil,9,9,0,{[85]={{38.8,52.6}}},nil,85,{26925,26937},{26937},nil,nil,nil,0},
 [45886] = {"Historian Eva Trelayne",nil,nil,9,9,0,{[1458]={{75.8,37.8}}},nil,1458,nil,{26927},nil,"H",nil,0}, -- In Undercity Magic Quarter
 [45887] = {"Historian Todd Page",nil,nil,9,9,0,{[85]={{60.6,51.0}}},nil,85,{26926},{26925},nil,nil,nil,0},
-[45888] = {"Lost Ancient",1920,2160,48,48,0,{[357]={{55.84,73.56}}},nil,357,nil,nil,nil,nil,nil,0},
+[45888] = {"Deathguard Kitsapell",nil,nil,11,11,0,{[130]={{49.6,31.1}}},nil,130,{26928,26929},nil,nil,nil,nil,0}, -- Updated from issue #20 (Silverpine Forest)
 [45895] = {"Dark Ooze",nil,nil,9,10,0,{[85]={{24.5,49.5},{24.1,50},{24.1,50.4},{23.9,51.1},{23.8,51},{23.7,51.7},{24.2,49.7}}},nil,85,nil,nil,nil,nil,nil,0},
 [45898] = {"Luna Strinbrow",nil,nil,5,5,0,{[85]={{30.8,65.3}}},nil,85,{26939},{26939},nil,nil,nil,0},
 [45899] = {"Fergus Kitsapell",nil,nil,10,10,0,{[85]={{60.3,53.1}}},nil,85,{26940},{26940},nil,nil,nil,0},
