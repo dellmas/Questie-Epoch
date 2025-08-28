@@ -10,7 +10,6 @@ Questie addon optimized for Project Epoch (3.3.5a) with 600+ custom quests.
 4. Move the `Questie-Epoch-master` folder to your WoW AddOns folder:
    - Default location: `C:\Program Files\Ascension Launcher\resources\epoch_live\Interface\Addons`
 5. **Important:** Rename the folder from `Questie-Epoch-master` to just `Questie`
-6. Restart WoW or type `/reload` if already in game
 
 ## Features
 - Epoch quest database with 600+ custom quests (IDs 26000+)
