@@ -33,8 +33,16 @@ local C_Map = QuestieCompat.C_Map
 local GetQuestLogTitle = QuestieCompat.GetQuestLogTitle
 local GetQuestLogIndexByID = QuestieCompat.GetQuestLogIndexByID
 local WorldMapFrame = QuestieCompat.WorldMapFrame
-
 local tinsert = table.insert
+
+-- TomTom auto-tracking timer
+local tomtomAutoTrackTimer
+local lastWaypoint
+
+-- Add config option for TomTom auto-target mode
+if not Questie.db.profile.tomtomAutoTargetMode and TomTom then
+    Questie.db.profile.tomtomAutoTargetMode = false
+end
 
 local objectiveFlashTicker
 local zoneCache = {}
@@ -67,6 +75,51 @@ local bindTruthTable = {
     end,
     ['disabled'] = function() return false end,
 }
+
+
+function TrackerUtils:GetTomTomAutoTargetQuest()
+    if not TomTom or not Questie.db.profile.tomtomAutoTargetMode then return nil end
+    -- Always use proximity sorting for closest quest
+    Questie.db.profile.trackerSortObjectives = "byProximity"
+    local sorted, details = TrackerUtils:GetSortedQuestIds()
+    if sorted and #sorted > 0 then
+        local quest = details[sorted[1]] and details[sorted[1]].quest and QuestiePlayer.currentQuestlog[details[sorted[1]].quest.Id] 
+        if quest then return quest end
+    end
+    return nil
+end
+
+
+function TrackerUtils:StartTomTomAutoTracking()
+    if not TomTom or not TomTom.AddWaypoint or not Questie.db.profile.tomtomAutoTargetMode then return end
+    
+    if tomtomAutoTrackTimer then
+        tomtomAutoTrackTimer:Cancel()
+        tomtomAutoTrackTimer = nil
+    end
+
+    tomtomAutoTrackTimer = C_Timer.NewTicker(5.0, function()
+        local quest = TrackerUtils:GetTomTomAutoTargetQuest()
+        if quest then
+            local questId = quest.Id or tostring(quest)   
+            local spawn, zone, name = QuestieMap:GetNearestQuestSpawn(quest)
+            if (not spawn) and quest.objective ~= nil then
+                spawn, zone, name = QuestieMap:GetNearestSpawn(quest.objective)
+            end
+            if spawn then
+                TrackerUtils:SetTomTomTarget(name, zone, spawn[1], spawn[2])
+            end
+        end
+    end)
+end
+
+function TrackerUtils:StopTomTomAutoTracking()
+    if tomtomAutoTrackTimer then
+        tomtomAutoTrackTimer:Cancel()
+        tomtomAutoTrackTimer = nil
+    end
+    lastWaypoint = nil
+end
 
 local _QuestLogScrollBar = QuestLogScrollFrameScrollBar or QuestLogListScrollFrame.ScrollBar or QuestLogListScrollFrameScrollBar
 

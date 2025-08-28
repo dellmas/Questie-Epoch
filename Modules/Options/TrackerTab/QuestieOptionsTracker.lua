@@ -14,6 +14,9 @@ local TrackerLinePool = QuestieLoader:ImportModule("TrackerLinePool")
 ---@type TrackerQuestTimers
 local TrackerQuestTimers = QuestieLoader:ImportModule("TrackerQuestTimers")
 
+---@type TrackerUtils
+local TrackerUtils = QuestieLoader:ImportModule("TrackerUtils")
+
 ---@type l10n
 local l10n = QuestieLoader:ImportModule("l10n")
 
@@ -577,6 +580,22 @@ function QuestieOptions.tabs.tracker:Initialize()
                             QuestieTracker:ResetLocation()
                             QuestieTracker:Update()
                         end
+                    },
+                    tomtomAutoTargetMode = {
+                            type = "toggle",
+                            order = 11.5,
+                            name = function() return l10n('Auto Waypoint') end,
+                            desc = function() return l10n('Enable if TomTom will automatically point to the closest quest.') end,
+                            disabled = function() return not Questie.db.profile.trackerEnabled end,
+                            hidden = function() return not IsAddOnLoaded("TomTom") end,
+                            get = function() return Questie.db.profile.tomtomAutoTargetMode end,
+                            set = function(_, value)
+                                Questie.db.profile.tomtomAutoTargetMode = value
+                                TrackerUtils:StartTomTomAutoTracking()
+                                if not value then
+                                    TrackerUtils:StopTomTomAutoTracking()
+                                end
+                            end
                     },
                     Spacer_Sliders = QuestieOptionsUtils:Spacer(12),
                     trackerHeightRatio = {
