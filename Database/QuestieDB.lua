@@ -1254,23 +1254,36 @@ function QuestieDB.GetQuest(questId) -- /dump QuestieDB.GetQuest(867)
                 -- Use different prefix based on quest ID range
                 local prefix = questId >= 26000 and "[Epoch] " or "[Missing] "
                 return {
-                    prefix .. (questTitle or ("Quest " .. questId)), -- name
-                    {{}, {}, {}}, -- startedBy (properly structured: {NPCs, GameObjects, Items})
-                    {{}, {}}, -- finishedBy (properly structured: {NPCs, GameObjects})
-                    1,   -- minLevel (default)
-                    60,  -- questLevel (default max)
-                    0,   -- requiredRaces (all)
-                    0,   -- requiredClasses (all)
-                    nil, -- objectivesText
-                    nil, -- triggerEnd
-                    nil, -- objectives
-                    nil, -- sourceItemId
-                    nil, -- preQuestGroup
-                    nil, -- preQuestSingle
-                    nil, -- childQuests
-                    nil, -- inGroupWith
-                    nil, -- exclusiveTo
-                    0,   -- zoneOrSort (unknown zone)
+                    prefix .. (questTitle or ("Quest " .. questId)), -- [1] name
+                    {{}, {}, {}}, -- [2] startedBy (properly structured: {NPCs, GameObjects, Items})
+                    {{}, {}}, -- [3] finishedBy (properly structured: {NPCs, GameObjects})
+                    1,   -- [4] requiredLevel (default)
+                    60,  -- [5] questLevel (default max)
+                    0,   -- [6] requiredRaces (all)
+                    0,   -- [7] requiredClasses (all)
+                    nil, -- [8] objectivesText
+                    nil, -- [9] triggerEnd
+                    nil, -- [10] objectives
+                    nil, -- [11] sourceItemId
+                    nil, -- [12] preQuestGroup
+                    nil, -- [13] preQuestSingle
+                    nil, -- [14] childQuests
+                    nil, -- [15] inGroupWith
+                    nil, -- [16] exclusiveTo
+                    0,   -- [17] zoneOrSort (unknown zone)
+                    nil, -- [18] requiredSkill
+                    nil, -- [19] requiredMinRep
+                    nil, -- [20] requiredMaxRep
+                    nil, -- [21] requiredSourceItems
+                    nil, -- [22] nextQuestInChain
+                    0,   -- [23] questFlags (0 = normal)
+                    0,   -- [24] specialFlags (0 = not repeatable)
+                    nil, -- [25] parentQuest
+                    nil, -- [26] reputationReward
+                    nil, -- [27] extraObjectives
+                    nil, -- [28] requiredSpell
+                    nil, -- [29] requiredSpecialization
+                    nil, -- [30] requiredMaxLevel
                 }
             end)
             
